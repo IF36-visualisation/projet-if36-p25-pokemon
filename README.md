@@ -10,6 +10,8 @@ Ventes Jeux Vidéos \
 https://www.kaggle.com/datasets/gregorut/videogamesales \
 Pokémon TCG Pocket \
 https://www.kaggle.com/datasets/updatethisplz/limitless-ptcgp-all-data \
+Analyse du dataset Pokemon TCG Pocket \
+https://www.kaggle.com/code/updatethisplz/pokemon-tcg-pocket-analysis \
 Sondage de popularité \
 https://pastebin.com/LvhaTx7w \
 (Mêmes résultats mais déja un peu traités : https://docs.google.com/spreadsheets/d/1c16Wh4AawHGbTi3Eq1DGZQdM4FMUlJO1YwXJZ_ylRvg/edit?gid=557303698#gid=557303698) \ 
