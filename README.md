@@ -6,6 +6,7 @@ Stats Générales \
 https://www.kaggle.com/datasets/mihirbindal/the-complete-pokemon-dataset \
 Cartes \
 https://www.kaggle.com/datasets/adampq/pokemon-tcg-all-cards-1999-2023?select=pokemon-tcg-data-master+1999-2023.csv \
+https://www.kaggle.com/datasets/jacklacey/pokemon-trading-cards \
 Ventes Jeux Vidéos \
 https://www.kaggle.com/datasets/gregorut/videogamesales \
 Pokémon TCG Pocket \
