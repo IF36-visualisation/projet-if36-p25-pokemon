@@ -12,3 +12,4 @@ Pokémon TCG Pocket \
 https://www.kaggle.com/datasets/updatethisplz/limitless-ptcgp-all-data \
 Sondage de popularité \
 https://pastebin.com/LvhaTx7w \
+(Mêmes résultats mais déja un peu traités : https://docs.google.com/spreadsheets/d/1c16Wh4AawHGbTi3Eq1DGZQdM4FMUlJO1YwXJZ_ylRvg/edit?gid=557303698#gid=557303698) \ 
