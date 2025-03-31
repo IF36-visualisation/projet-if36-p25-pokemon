@@ -8,8 +8,10 @@ Ce dataset sera notre jeu de donné principal. En effet, ce jeu de données cont
 **génération**, leurs **capacités**, des statistiques physiques comme la **taille** et le **poids**, leur **type**, leur **multiplicateur de défense contre chaque type**, etc. Ces données incluent non seulement les 890 Pokémon, mais aussi **leurs méga-évolutions**, leurs **formes de Galar**, **d'Alola** ainsi que leurs **formes alternatives**.
 
 Le dataset contient **1034** enregistrements.
+<details open>
+<summary>Voici la liste des 40 features du dataset :</summary>
+<br>
 
-Voici la liste des features du dataset :
 - pokedex_number
 - name
 - generation
@@ -51,12 +53,18 @@ Voici la liste des features du dataset :
 - is_mythical
 - is_mega
 
+</details>
+
+
 ### 2. Pokemon TCG All Cards 1999 - 2023 ([dispo. ici](https://www.kaggle.com/datasets/adampq/pokemon-tcg-all-cards-1999-2023?select=pokemon-tcg-data-master+1999-2023.csv))
 Ce dataset est un jeu de donné agrégé compilant des informations complètes sur les sets et cartes du jeu de cartes à collectionner Pokémon (TCG) de 1999 à 2023, provenant de l'API Pokémon TCG. Ce jeu de données offre une vue d'ensemble détaillée des cartes Pokémon TCG, incluant leurs attributs, capacités, attaques et autres informations pertinentes. Il constitue une ressource précieuse relier chaque pokémon et ses statistiques dans le jeu vidéo, à ses équivalents dans le jeu de carte physique.
 
 Ce dataset contient **17172** enregistrements.
 
-Voici les features du dataset :
+<details>
+<summary>Voici les 29 features du dataset : </summary>
+  <br>
+  
 - id
 - set
 - series
@@ -86,6 +94,7 @@ Voici les features du dataset :
 - rules
 - regulationMark
 - ancientTrait
+- </details>
 
 ### 3. Pokémon Trading Cards ([dispo. ici](https://www.kaggle.com/datasets/jacklacey/pokemon-trading-cards))
 Ce dataset pourra être utilisé en complément du précédent. Il permet de relier les cartes du jeu à leur prix de vente. Il contient des données détaillant les cartes Pokémon en vente sur chaoscards.co.uk. 
@@ -104,7 +113,10 @@ Ce dataset est similaire au numéro 2, mais se porte sur les cartes virtuelles (
 
 Il contient **405** enregistrements.
 
-Chaque enregistrement possède les features suivantes :
+<details>
+<summary>Chaque enregistrement possède les features suivantes : </summary>
+  <br>
+  
 - rarity
 - card_name
 - weakness
@@ -127,6 +139,7 @@ Chaque enregistrement possède les features suivantes :
 - move2_effect
 - pull_rate_at_least_one
 - card_number,full_card_name
+</details>
 
 ### 5. Sondage de popularité ([dispo. ici](https://pastebin.com/LvhaTx7w))
 Ce dataset est le seul que nous avons trouvé pour obtenir des informations sur la popularité des pokémons. Il provient d'un sondage fait sur un forum de fans de la license (**52 725** votants).
