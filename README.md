@@ -154,33 +154,94 @@ Chaque enregistrement possède les features suivantes :
 
 
 ### 6. Pokemon TCG - All Tournaments Decks (2011-2023) ([dispo. ici](https://www.kaggle.com/datasets/enriccogemha/pokemon-tcg-all-tournaments-decks-2011-2023))
+Ce dataset contient lui aussi des données sur les cartes physiques, mais se concentre sur leur utilisation en tounoi. Ainsi, on peut savoir quelles cartes sont les plus jouées, et dans quels combos (= combinées avec quelles autres cartes) celles-ci sont jouées.
 
+Il contient **114 292** enregistrements.
+
+<details>
+<summary>Chaque enregistrement possède les features suivantes : </summary>
+  <br>
+  
+- id_card
+- name_card
+- amount_card
+- price_card
+- energy_type_card
+- type_card
+- combo_type_id
+- combo_type_name
+- id_player
+-	name_player
+-	country_player
+-	all_time_score
+-	ranking_player_tournament
+-	id_tournament
+-	category_tournament
+-	name_tournament
+-	region_tournament
+-	country_tournament
+-	year_tournament
+-	month_tournament
+-	day_tournament
+-	valid_rotation_at_tournament
+-	rotation_name
+-	year_begin
+-	month_begin
+- day_begin
+
+</details>
 
 ### 7. Pokemon Image Dataset ([dispo. ici](https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types))
+Ce dataset contient des photos de pokémon. Il peut être utile pour un rapport.
+
 
 ### 8. Video Game Sales ([dispo. ici](https://www.kaggle.com/datasets/gregorut/videogamesales))
+Ce dataset contient une liste des hjeux vidéos vendus à plus de 100 000 copies. Il Peut nous permettre de lier les ventes des jeux vidéos pokémons, à par exemple, la popularité de certain pokémons.
 
+Il contient **16 599** enregistrements.
 
-Analyse du dataset Pokemon TCG Pocket \
-https://www.kaggle.com/code/updatethisplz/pokemon-tcg-pocket-analysis \
+<details>
+<summary>Chaque enregistrement possède les features suivantes : </summary>
+  <br>
+- Rank
+- Name
+-	Platform
+-	Year
+-	Genre
+-	Publisher
+-	NA_Sales
+-	EU_Sales
+-	JP_Sales
+-	Other_Sales
+-	Global_Sales
+</details>
 
 ## Exemples de questionnements
 En utilisant les datasets précédents, nous avons identifiés plusieurs questionnements / raisonnements qui pourraient servir de bases aux data-visualisations réalisées :
 
-2. Pokemon TCG All Cards 1999 - 2023 :
+1. The complete pokemon dataset
+- Les différents types de pokémons sont ils équitablements répartis ? Cette distribution change t'elle d'une génération à une autre ?
+- Quelles combinaisons de type 1 / type 2 sont les plus courantes ? 
+- Observe t'on une relation entre le poids et la taille ?
+- Observe t'on une relation entre la taille, le poids et la vitesse des pokémons ?
+- Quel est le nombre de pokémons introduits à chaque génération ?
+- Quel est le nombvre / la répartition des pokémons légendaires parmis ceux introduits à chaque générations ?
 
+2. Pokemon TCG All Cards 1999 - 2023 :
 - Voir la répartition des types de Pokémon (Feu, Eau, Plante, etc..) par génération
 - Comparaison des HP et attaques selon le type
 - Comparaison des HP et attaques selon la rareté de la carte
 
 3. Pokémon Trading Cards :
-
 - Prix moyen des cartes selon la génération
 - Quelles cartes Pokémon sont les plus chères (prendre un TOP 20)
 - Corrélation entre prix et génération
 - Comparaison du prix moyen entre les types de cartes
 - Répartition des types de cartes
-  
+
+4. Limitless PTCGP All Data :
+Raisonnement similaire au jeu de cartes physique, et comparaison avec celui-ci.
+
 5. Sondage de popularité :
 
 - Quels sont les Pokémons les plus populaires ?
