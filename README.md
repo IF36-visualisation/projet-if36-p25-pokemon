@@ -151,8 +151,6 @@ Chaque enregistrement possède les features suivantes :
 Analyse du dataset Pokemon TCG Pocket \
 https://www.kaggle.com/code/updatethisplz/pokemon-tcg-pocket-analysis \
 
-
-(Mêmes résultats mais déja un peu traités : https://docs.google.com/spreadsheets/d/1c16Wh4AawHGbTi3Eq1DGZQdM4FMUlJO1YwXJZ_ylRvg/edit?gid=557303698#gid=557303698) \ 
 ## Exemples de questionnements
 En utilisant les datasets précédents, nous avons identifiés plusieurs questionnements / raisonnements qui pourraient servir de bases aux data-visualisations réalisées :
 
