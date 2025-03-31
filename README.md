@@ -248,11 +248,21 @@ Raisonnement similaire au jeu de cartes physique, et comparaison avec celui-ci.
 - Est-ce qu'il y'a une corrélation entre la popularité et la génération ?
 - Est-ce qu'il y'a une corrélation entre la popularité et le type ?
 
+6. Pokemon TCG - All Tournaments Decks (2011-2023)
+
+- Comparaison du prix des decks gagnants de chaque compétition
+- Est-ce que les decks gagnants sont les mêmes d'une compétition à une autre de la même année ? Retrouve-t-on tout de même des cartes incontournables ?
+- A quel point un deck est-il utilisé au cours d'une année ?
+- Voir si il y a une corrélation entre le prix du deck et le classement dans un tournoi
+- A quel point un deck est-il utilisé en fonction des régions ? Chaque région a-t-elle un deck préféré ?
+- Quelle région du monde a les meilleurs joueurs ?
+- Quelle région a remporté le plus de tournois ?
+  
 7. Pokemon Image Dataset :
 
 - Quelle est la répartition des seconds type en fonction du premier type ?
   
-9. Video Game Sales :
+8. Video Game Sales :
 
 - Evolution des ventes des jeux Pokémon 
 - Analyse des ventes des jeux Pokémon par région
