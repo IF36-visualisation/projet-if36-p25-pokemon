@@ -167,6 +167,13 @@ https://www.kaggle.com/code/updatethisplz/pokemon-tcg-pocket-analysis \
 ## Exemples de questionnements
 En utilisant les datasets précédents, nous avons identifiés plusieurs questionnements / raisonnements qui pourraient servir de bases aux data-visualisations réalisées :
 
+8.Video Game Sales :
+
+- Evolution des ventes des jeux Pokémon 
+- Analyse des ventes des jeux Pokémon par région
+- Comparaison des ventes des jeux principaux (Pokémon Noir & Blanc, Rouge, etc..) contre les spin-offs (Mystery Dungeon, Snap)
+- Montrer si il y'a une corrélation entre année de sortie et ventes
+
 ## Auteurs du projet
 - Musset Aurélien
 - Arulraj Sinthujan
