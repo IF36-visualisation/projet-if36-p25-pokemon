@@ -173,6 +173,14 @@ En utilisant les datasets précédents, nous avons identifiés plusieurs questio
 - Comparaison des HP et attaques selon le type
 - Comparaison des HP et attaques selon la rareté de la carte
 
+3. Pokémon Trading Cards :
+
+- Prix moyen des cartes selon la génération
+- Quelles cartes Pokémon sont les plus chères (prendre un TOP 20)
+- Corrélation entre prix et génération
+- Comparaison du prix moyen entre les types de cartes
+- Répartition des types de cartes
+  
 5. Sondage de popularité :
 
 - Quels sont les Pokémons les plus populaires ?
