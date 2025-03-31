@@ -1,18 +1,163 @@
-Pokemon Images. \
-https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types \
-Tournois \
-https://www.kaggle.com/datasets/enriccogemha/pokemon-tcg-all-tournaments-decks-2011-2023 \
-Stats Générales \
-https://www.kaggle.com/datasets/mihirbindal/the-complete-pokemon-dataset \
-Cartes \
-https://www.kaggle.com/datasets/adampq/pokemon-tcg-all-cards-1999-2023?select=pokemon-tcg-data-master+1999-2023.csv \
-https://www.kaggle.com/datasets/jacklacey/pokemon-trading-cards \
-Ventes Jeux Vidéos \
-https://www.kaggle.com/datasets/gregorut/videogamesales \
-Pokémon TCG Pocket \
-https://www.kaggle.com/datasets/updatethisplz/limitless-ptcgp-all-data \
+# Projet IF36 - Pokémon
+
+## Proposition des Datasets
+Voici les differents datasets repérés, qui vont nous permettre de réaliser une exploration pertinente et cohérente de notre sujet :
+
+### 1. The complete pokemon dataset ([dispo. ici](https://www.kaggle.com/datasets/mihirbindal/the-complete-pokemon-dataset))
+Ce dataset sera notre jeu de donné principal. En effet, ce jeu de données contient les **noms**, **le numéro du Pokédex**, leur 
+**génération**, leurs **capacités**, des statistiques physiques comme la **taille** et le **poids**, leur **type**, leur **multiplicateur de défense contre chaque type**, etc. Ces données incluent non seulement les 890 Pokémon, mais aussi **leurs méga-évolutions**, leurs **formes de Galar**, **d'Alola** ainsi que leurs **formes alternatives**.
+
+Le dataset contient **1034** enregistrements.
+
+Voici la liste des features du dataset :
+- pokedex_number
+- name
+- generation
+- classification
+- abilities
+- height_m
+- weight_kg
+- type1
+- type2
+- base_total
+- hp
+- attack
+- defense
+- sp_attack
+- sp_defense
+- speed
+- against_bug
+- against_dark
+- against_dragon
+- against_electric
+- against_fairy
+- against_fighting
+- against_fire
+- against_flying
+- against_ghost
+- against_grass
+- against_ground
+- against_ice
+- against_normal
+- against_poison
+- against_psychic
+- against_rock
+- against_steel
+- against_water
+- capture_rate
+- base_egg_steps
+- base_happiness
+- is_legendary
+- is_mythical
+- is_mega
+
+### 2. Pokemon TCG All Cards 1999 - 2023 ([dispo. ici](https://www.kaggle.com/datasets/adampq/pokemon-tcg-all-cards-1999-2023?select=pokemon-tcg-data-master+1999-2023.csv))
+Ce dataset est un jeu de donné agrégé compilant des informations complètes sur les sets et cartes du jeu de cartes à collectionner Pokémon (TCG) de 1999 à 2023, provenant de l'API Pokémon TCG. Ce jeu de données offre une vue d'ensemble détaillée des cartes Pokémon TCG, incluant leurs attributs, capacités, attaques et autres informations pertinentes. Il constitue une ressource précieuse relier chaque pokémon et ses statistiques dans le jeu vidéo, à ses équivalents dans le jeu de carte physique.
+
+Ce dataset contient **17172** enregistrements.
+
+Voici les features du dataset :
+- id
+- set
+- series
+- publisher
+- generation
+- release_date
+- artist
+- name
+- set_num
+- types
+- supertype
+- subtypes
+- level
+- hp
+- evolvesFrom
+- evolvesTo
+- abilities
+- attacks
+- weaknesses
+- retreatCost
+- convertedRetreatCost
+- rarity
+- flavorText
+- nationalPokedexNumbers
+- legalities
+- resistances
+- rules
+- regulationMark
+- ancientTrait
+
+### 3. Pokémon Trading Cards ([dispo. ici](https://www.kaggle.com/datasets/jacklacey/pokemon-trading-cards))
+Ce dataset pourra être utilisé en complément du précédent. Il permet de relier les cartes du jeu à leur prix de vente. Il contient des données détaillant les cartes Pokémon en vente sur chaoscards.co.uk. 
+
+Ce dataset contient **25598** enregistrements.
+
+Chaque enregistrement contient :
+- le Pokémon
+- son type de carte
+- la génération
+- son numéro de carte
+- le prix de la carte
+
+### 4. Limitless PTCGP All Data ([dispo. ici](https://www.kaggle.com/datasets/updatethisplz/limitless-ptcgp-all-data))
+Ce dataset est similaire au numéro 2, mais se porte sur les cartes virtuelles (du jeu mobile sorti en 2024). Ainsi; il contient des informations sur les cartes des pokémons du jeu TCG Pocket.
+
+Il contient **405** enregistrements.
+
+Chaque enregistrement possède les features suivantes :
+- rarity
+- card_name
+- weakness
+- energy_type
+- expansion
+- number
+- illustration
+- obtaining_method
+- type
+- retreat_cost
+- hp
+- description
+- move1_name
+- move1_energy_cost
+- move1_power
+- move1_effect
+- move2_name
+- move2_energy_cost
+- move2_power
+- move2_effect
+- pull_rate_at_least_one
+- card_number,full_card_name
+
+### 5. Sondage de popularité ([dispo. ici](https://pastebin.com/LvhaTx7w))
+Ce dataset est le seul que nous avons trouvé pour obtenir des informations sur la popularité des pokémons. Il provient d'un sondage fait sur un forum de fans de la license (**52 725** votants).
+Les données sont également disponibles [ici](https://docs.google.com/spreadsheets/d/1c16Wh4AawHGbTi3Eq1DGZQdM4FMUlJO1YwXJZ_ylRvg/edit?gid=557303698#gid=557303698), où elles sont un peu analysées
+
+Le dataset contient **810** enregistrements.
+
+Chaque enregistrement possède les features suivantes :
+- Nom du pokémon
+- Nombre de vote
+- Place dans le classement
+
+
+### 6. Pokemon TCG - All Tournaments Decks (2011-2023) ([dispo. ici](https://www.kaggle.com/datasets/enriccogemha/pokemon-tcg-all-tournaments-decks-2011-2023))
+
+
+### 7. Pokemon Image Dataset ([dispo. ici](https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types))
+
+### 8. Video Game Sales ([dispo. ici](https://www.kaggle.com/datasets/gregorut/videogamesales))
+
+
 Analyse du dataset Pokemon TCG Pocket \
 https://www.kaggle.com/code/updatethisplz/pokemon-tcg-pocket-analysis \
-Sondage de popularité \
-https://pastebin.com/LvhaTx7w \
+
+
 (Mêmes résultats mais déja un peu traités : https://docs.google.com/spreadsheets/d/1c16Wh4AawHGbTi3Eq1DGZQdM4FMUlJO1YwXJZ_ylRvg/edit?gid=557303698#gid=557303698) \ 
+## Exemples de questionnements
+En utilisant les datasets précédents, nous avons identifiés plusieurs questionnements / raisonnements qui pourraient servir de bases aux data-visualisations réalisées :
+
+## Auteurs du projet
+- Musset Aurélien
+- Arulraj Sinthujan
+- Schummer Lucas
+- Khuu Sophie
