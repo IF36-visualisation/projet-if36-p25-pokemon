@@ -1,3 +1,10 @@
+# Données
+
+## The complete Pokemon Dataset
+[link](https://www.kaggle.com/datasets/mihirbindal/the-complete-pokemon-dataset)
+
+# Plan d'analyse
+
 Pokemon Images. \
 https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types \
 Tournois \
