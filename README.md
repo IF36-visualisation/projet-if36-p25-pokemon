@@ -167,6 +167,11 @@ https://www.kaggle.com/code/updatethisplz/pokemon-tcg-pocket-analysis \
 ## Exemples de questionnements
 En utilisant les datasets précédents, nous avons identifiés plusieurs questionnements / raisonnements qui pourraient servir de bases aux data-visualisations réalisées :
 
+2. Pokemon TCG All Cards 1999 - 2023 :
+
+- Voir la répartition des types de Pokémon (Feu, Eau, Plante, etc..) par génération
+- Comparaison des HP et attaques selon le type
+- Comparaison des HP et attaques selon la rareté de la carte
 
 5. Sondage de popularité :
 
