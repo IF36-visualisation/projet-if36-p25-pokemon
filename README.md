@@ -167,7 +167,14 @@ https://www.kaggle.com/code/updatethisplz/pokemon-tcg-pocket-analysis \
 ## Exemples de questionnements
 En utilisant les datasets précédents, nous avons identifiés plusieurs questionnements / raisonnements qui pourraient servir de bases aux data-visualisations réalisées :
 
-8.Video Game Sales :
+
+5. Sondage de popularité :
+
+- Quels sont les Pokémons les plus populaires ?
+- Est-ce qu'il y'a une corrélation entre la popularité et la génération ?
+- Est-ce qu'il y'a une corrélation entre la popularité et le type ?
+  
+8. Video Game Sales :
 
 - Evolution des ventes des jeux Pokémon 
 - Analyse des ventes des jeux Pokémon par région
