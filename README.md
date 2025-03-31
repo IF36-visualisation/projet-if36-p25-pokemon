@@ -1,10 +1,10 @@
 # Projet IF36 - Pokémon
 
 ## Proposition des Datasets
-Voici les differents datasets repérés, qui vont nous permettre de réaliser une exploration pertinente et cohérente de notre sujet :
+Voici les différents datasets repérés, qui vont nous permettre de réaliser une exploration pertinente et cohérente de notre sujet :
 
 ### 1. The complete pokemon dataset ([dispo. ici](https://www.kaggle.com/datasets/mihirbindal/the-complete-pokemon-dataset))
-Ce dataset sera notre jeu de donné principal. En effet, ce jeu de données contient les **noms**, **le numéro du Pokédex**, leur 
+Ce dataset sera notre jeu de données principal. En effet, ce jeu de données contient les **noms**, **le numéro du Pokédex**, leur 
 **génération**, leurs **capacités**, des statistiques physiques comme la **taille** et le **poids**, leur **type**, leur **multiplicateur de défense contre chaque type**, etc. Ces données incluent non seulement les 890 Pokémon, mais aussi **leurs méga-évolutions**, leurs **formes de Galar**, **d'Alola** ainsi que leurs **formes alternatives**.
 
 Le dataset contient **1034** enregistrements.
@@ -57,7 +57,7 @@ Le dataset contient **1034** enregistrements.
 
 
 ### 2. Pokemon TCG All Cards 1999 - 2023 ([dispo. ici](https://www.kaggle.com/datasets/adampq/pokemon-tcg-all-cards-1999-2023?select=pokemon-tcg-data-master+1999-2023.csv))
-Ce dataset est un jeu de donné agrégé compilant des informations complètes sur les sets et cartes du jeu de cartes à collectionner Pokémon (TCG) de 1999 à 2023, provenant de l'API Pokémon TCG. Ce jeu de données offre une vue d'ensemble détaillée des cartes Pokémon TCG, incluant leurs attributs, capacités, attaques et autres informations pertinentes. Il constitue une ressource précieuse relier chaque pokémon et ses statistiques dans le jeu vidéo, à ses équivalents dans le jeu de carte physique.
+Ce dataset est un jeu de données agrégé compilant des informations complètes sur les sets et cartes du jeu de cartes à collectionner Pokémon (TCG) de 1999 à 2023, provenant de l'API Pokémon TCG. Ce jeu de données offre une vue d'ensemble détaillée des cartes Pokémon TCG, incluant leurs attributs, capacités, attaques et autres informations pertinentes. Il constitue une ressource précieuse relier chaque pokémon et ses statistiques dans le jeu vidéo, à ses équivalents dans le jeu de carte physique.
 
 Ce dataset contient **17172** enregistrements.
 
@@ -109,7 +109,7 @@ Chaque enregistrement contient :
 - le prix de la carte
 
 ### 4. Limitless PTCGP All Data ([dispo. ici](https://www.kaggle.com/datasets/updatethisplz/limitless-ptcgp-all-data))
-Ce dataset est similaire au numéro 2, mais se porte sur les cartes virtuelles (du jeu mobile sorti en 2024). Ainsi; il contient des informations sur les cartes des pokémons du jeu TCG Pocket.
+Ce dataset est similaire au numéro 2, mais se porte sur les cartes virtuelles (du jeu mobile sorti en 2024). Ainsi, il contient des informations sur les cartes des pokémons du jeu TCG Pocket.
 
 Il contient **405** enregistrements.
 
@@ -196,7 +196,7 @@ Ce dataset contient des photos de pokémon. Il peut être utile pour un rapport.
 
 
 ### 8. Video Game Sales ([dispo. ici](https://www.kaggle.com/datasets/gregorut/videogamesales))
-Ce dataset contient une liste des hjeux vidéos vendus à plus de 100 000 copies. Il Peut nous permettre de lier les ventes des jeux vidéos pokémons, à par exemple, la popularité de certain pokémons.
+Ce dataset contient une liste des jeux vidéos vendus à plus de 100 000 copies. Il peut nous permettre de lier les ventes des jeux vidéos pokémons, à par exemple, la popularité de certains pokémons.
 
 Il contient **16 599** enregistrements.
 
@@ -217,30 +217,33 @@ Il contient **16 599** enregistrements.
 </details>
 
 ## Exemples de questionnements
-En utilisant les datasets précédents, nous avons identifiés plusieurs questionnements / raisonnements qui pourraient servir de bases aux data-visualisations réalisées :
+En utilisant les datasets précédents, nous avons identifié plusieurs questionnements / raisonnements qui pourraient servir de bases aux data-visualisations réalisées :
 
-1. The complete pokemon dataset
-- Les différents types de pokémons sont ils équitablements répartis ? Cette distribution change t'elle d'une génération à une autre ?
+1. The complete pokemon dataset :
+   
+- Les différents types de pokémons sont-ils équitablement répartis ? Cette distribution change t-elle d'une génération à une autre ?
 - Quelles combinaisons de type 1 / type 2 sont les plus courantes ? 
-- Observe t'on une relation entre le poids et la taille ?
-- Observe t'on une relation entre la taille, le poids et la vitesse des pokémons ?
-- Quel est le nombre de pokémons introduits à chaque génération ?
-- Quel est le nombvre / la répartition des pokémons légendaires parmis ceux introduits à chaque générations ?
+- Observe t-on une relation entre le poids et la taille ?
+- Observe t-on une relation entre la taille, le poids et la vitesse des pokémons ?
+- Quel est le nombre de pokémons introduit à chaque génération ?
+- Quel est le nombre / la répartition des pokémons légendaires parmi ceux introduits à chaque génération ?
 
 2. Pokemon TCG All Cards 1999 - 2023 :
+   
 - Voir la répartition des types de Pokémon (Feu, Eau, Plante, etc..) par génération
 - Comparaison des HP et attaques selon le type
 - Comparaison des HP et attaques selon la rareté de la carte
 
 3. Pokémon Trading Cards :
-- Prix moyen des cartes selon la génération
+
 - Quelles cartes Pokémon sont les plus chères (prendre un TOP 20)
 - Corrélation entre prix et génération
 - Comparaison du prix moyen entre les types de cartes
 - Répartition des types de cartes
 
 4. Limitless PTCGP All Data :
-Raisonnement similaire au jeu de cartes physique, et comparaison avec celui-ci.
+   
+- Raisonnement similaire au jeu de cartes physique, et comparaison avec celui-ci.
 
 5. Sondage de popularité :
 
