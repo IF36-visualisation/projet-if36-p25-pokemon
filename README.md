@@ -247,8 +247,12 @@ Raisonnement similaire au jeu de cartes physique, et comparaison avec celui-ci.
 - Quels sont les Pokémons les plus populaires ?
 - Est-ce qu'il y'a une corrélation entre la popularité et la génération ?
 - Est-ce qu'il y'a une corrélation entre la popularité et le type ?
+
+7. Pokemon Image Dataset :
+
+- Quelle est la répartition des seconds type en fonction du premier type ?
   
-8. Video Game Sales :
+9. Video Game Sales :
 
 - Evolution des ventes des jeux Pokémon 
 - Analyse des ventes des jeux Pokémon par région
