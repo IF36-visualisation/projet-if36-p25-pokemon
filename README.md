@@ -1,11 +1,11 @@
-# Projet IF36 - Pokémon
+# Introduction
 
-## Proposition des Datasets
+## Données
 Voici les différents datasets repérés, qui vont nous permettre de réaliser une exploration pertinente et cohérente de notre sujet :
 
 ### 1. The complete pokemon dataset ([dispo. ici](https://www.kaggle.com/datasets/mihirbindal/the-complete-pokemon-dataset))
 Ce dataset sera notre jeu de données principal. En effet, ce jeu de données contient les **noms**, **le numéro du Pokédex**, leur 
-**génération**, leurs **capacités**, des statistiques physiques comme la **taille** et le **poids**, leur **type**, leur **multiplicateur de défense contre chaque type**, etc. Ces données incluent non seulement les 890 Pokémon, mais aussi **leurs méga-évolutions**, leurs **formes de Galar**, **d'Alola** ainsi que leurs **formes alternatives**.
+**génération**, leurs **capacités**, des statistiques physiques comme la **taille** et le **poids**, leur **type**, leur **multiplicateur de défense contre chaque type**, etc. Ces données incluent non seulement les 890 Pokémon, mais aussi **leurs méga-évolutions**, leurs **formes de Galar**, **d'Alola** ainsi que leurs **formes alternatives**. Les données proviennent de deux sites communautaires : [pokemondb](https://pokemondb.net/) et [buldapedia](https://bulbapedia.bulbagarden.net/wiki/Main_Page)
 
 Le dataset contient **1034** enregistrements.
 <details open>
@@ -203,6 +203,7 @@ Il contient **16 599** enregistrements.
 <details>
 <summary>Chaque enregistrement possède les features suivantes : </summary>
   <br>
+  
 - Rank
 - Name
 -	Platform
@@ -216,7 +217,7 @@ Il contient **16 599** enregistrements.
 -	Global_Sales
 </details>
 
-## Exemples de questionnements
+## Plan d'analyse
 En utilisant les datasets précédents, nous avons identifié plusieurs questionnements / raisonnements qui pourraient servir de bases aux data-visualisations réalisées :
 
 1. The complete pokemon dataset :
@@ -240,6 +241,7 @@ En utilisant les datasets précédents, nous avons identifié plusieurs question
 - Corrélation entre prix et génération
 - Comparaison du prix moyen entre les types de cartes
 - Répartition des types de cartes
+- Lien entre la popularité d'un pokémon et le nombre de cartes éditées / leur prix
 
 4. Limitless PTCGP All Data :
    
@@ -250,6 +252,7 @@ En utilisant les datasets précédents, nous avons identifié plusieurs question
 - Quels sont les Pokémons les plus populaires ?
 - Est-ce qu'il y'a une corrélation entre la popularité et la génération ?
 - Est-ce qu'il y'a une corrélation entre la popularité et le type ?
+- Y a-t-il une corrélation entre la popularité d'un pokémon et ses statistiques en combat ?
 
 6. Pokemon TCG - All Tournaments Decks (2011-2023)
 
@@ -260,6 +263,7 @@ En utilisant les datasets précédents, nous avons identifié plusieurs question
 - A quel point un deck est-il utilisé en fonction des régions ? Chaque région a-t-elle un deck préféré ?
 - Quelle région du monde a les meilleurs joueurs ?
 - Quelle région a remporté le plus de tournois ?
+- Quelles statistiques de Pokemon sont-elles priviligiées en tournoi ?
   
 7. Pokemon Image Dataset :
 
