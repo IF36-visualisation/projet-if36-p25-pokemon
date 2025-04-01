@@ -220,7 +220,7 @@ Il contient **16 599** enregistrements.
 ## Plan d'analyse
 En utilisant les datasets précédents, nous avons identifié plusieurs questionnements / raisonnements qui pourraient servir de bases aux data-visualisations réalisées :
 
-1. The complete pokemon dataset :
+### 1. The complete pokemon dataset :
    
 - Les différents types de pokémons sont-ils équitablement répartis ? Cette distribution change t-elle d'une génération à une autre ?
 - Quelles combinaisons de type 1 / type 2 sont les plus courantes ? 
@@ -229,13 +229,13 @@ En utilisant les datasets précédents, nous avons identifié plusieurs question
 - Quel est le nombre de pokémons introduit à chaque génération ?
 - Quel est le nombre / la répartition des pokémons légendaires parmi ceux introduits à chaque génération ?
 
-2. Pokemon TCG All Cards 1999 - 2023 :
+### 2. Pokemon TCG All Cards 1999 - 2023 :
    
 - Voir la répartition des types de Pokémon (Feu, Eau, Plante, etc..) par génération
 - Comparaison des HP et attaques selon le type
 - Comparaison des HP et attaques selon la rareté de la carte
 
-3. Pokémon Trading Cards :
+### 3. Pokémon Trading Cards :
 
 - Quelles cartes Pokémon sont les plus chères (prendre un TOP 20)
 - Corrélation entre prix et génération
@@ -243,18 +243,18 @@ En utilisant les datasets précédents, nous avons identifié plusieurs question
 - Répartition des types de cartes
 - Lien entre la popularité d'un pokémon et le nombre de cartes éditées / leur prix
 
-4. Limitless PTCGP All Data :
+### 4. Limitless PTCGP All Data :
    
 - Raisonnement similaire au jeu de cartes physique, et comparaison avec celui-ci.
 
-5. Sondage de popularité :
+### 5. Sondage de popularité :
 
 - Quels sont les Pokémons les plus populaires ?
 - Est-ce qu'il y'a une corrélation entre la popularité et la génération ?
 - Est-ce qu'il y'a une corrélation entre la popularité et le type ?
 - Y a-t-il une corrélation entre la popularité d'un pokémon et ses statistiques en combat ?
 
-6. Pokemon TCG - All Tournaments Decks (2011-2023)
+### 6. Pokemon TCG - All Tournaments Decks (2011-2023)
 
 - Comparaison du prix des decks gagnants de chaque compétition
 - Est-ce que les decks gagnants sont les mêmes d'une compétition à une autre de la même année ? Retrouve-t-on tout de même des cartes incontournables ?
@@ -265,11 +265,11 @@ En utilisant les datasets précédents, nous avons identifié plusieurs question
 - Quelle région a remporté le plus de tournois ?
 - Quelles statistiques de Pokemon sont-elles priviligiées en tournoi ?
   
-7. Pokemon Image Dataset :
+### 7. Pokemon Image Dataset :
 
 - Quelle est la répartition des seconds type en fonction du premier type ?
   
-8. Video Game Sales :
+### 8. Video Game Sales :
 
 - Evolution des ventes des jeux Pokémon 
 - Analyse des ventes des jeux Pokémon par région
