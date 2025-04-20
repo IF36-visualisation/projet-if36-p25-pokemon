@@ -1,0 +1,94 @@
+---
+title: "Projet"
+output: html_document
+date: "2025-04-20"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(png)
+library(grid)
+library(ggimage)
+```
+
+
+```{r}
+popularity <- tibble(read.table("data/popularity.txt", header = TRUE, sep = ","))
+```
+
+
+```{r}
+pok_data <- tibble(read.csv2("data/Pokemon_data.csv", header = TRUE, sep=','))
+```
+
+```{r}
+merged <- popularity %>% left_join(pok_data %>% select(name, type1), by = c("Pokemon" = "name"))
+```
+
+
+```{r}
+type_summary <- merged %>%
+  filter(!is.na(type1)) %>%
+  group_by(type1) %>%
+  summarise(TotalVotes = sum(Number.of.votes), Count = n()) %>%
+  mutate(AvgVotes = TotalVotes / Count) %>%
+  arrange(desc(AvgVotes)) %>%
+  left_join(
+    # Select the most popular Pokemon for each type
+    merged %>%
+    filter(!is.na(type1)) %>%
+    group_by(type1) %>%
+    slice_max(Number.of.votes, n = 1) %>%
+    select(type1, Pokemon, Number.of.votes), 
+    by = "type1"
+  ) %>%
+  mutate(img_path = paste0("data/images/", tolower(Pokemon), ".png"))
+```
+
+
+```{r}
+type_colors <-c(
+	'Normal'= '#A8A77A',
+	'Fire' = '#EE8130',
+	'Water' = '#6390F0',
+	'Electric' = '#F7D02C',
+	'Grass' = '#7AC74C',
+	'Ice' = '#96D9D6',
+	'Fighting' = '#C22E28',
+	'Poison' = '#A33EA1',
+	'Ground' = '#E2BF65',
+	'Flying' = '#A98FF3',
+	'Psychic' = '#F95587',
+	'Bug' = '#A6B91A',
+	'Rock' = '#B6A136',
+	'Ghost' = '#735797',
+	'Dragon' = '#6F35FC',
+	'Dark' = '#705746',
+	'Steel' = '#B7B7CE',
+	'Fairy' = '#D685AD'
+)
+```
+
+
+## Popularité des types de Pokemon
+
+```{r}
+avg_votes <- mean(type_summary$AvgVotes)
+
+type_summary %>%
+  ggplot(aes(x = reorder(type1, -AvgVotes), y = AvgVotes, fill=type1)) +
+  geom_col() +
+  scale_fill_manual(values = type_colors) +
+  geom_hline(yintercept = avg_votes, linetype = "dashed", color = "red", linewidth = 1, alpha=.5) +
+  annotate("text", x = 14, y = avg_votes + 8, label = "Popularité moyenne", color = "red", size = 4, hjust = 0) +
+  labs(title = "Popularité des types de Pokemon", subtitle = "Nombre moyen de votes par Pokemon", x = "Type", y = "Votes") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
+  
+  geom_image(aes(image=img_path, y = AvgVotes), size=.2)
+```
+
