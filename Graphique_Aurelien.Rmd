@@ -5,6 +5,9 @@ date: "2025-04-20"
 ---
 
 On va créer une heatmap pour visualiser les combinaisons de types de Pokémon.
+On va utiliser le dataset `Pokemon_data.csv` qui contient les informations sur les Pokémon, y compris leurs types.
+On va cependant retirer les pokémons qui n'ont pas de type secondaire (type2 = "None").
+On va aussi ajouter des totaux pour chaque type principal et secondaire, et on va marquer les cellules de total avec une couleur différente.
 
 ```{r}
 library(ggplot2)
@@ -62,11 +65,16 @@ df_augmented <- df_augmented %>%
 ggplot(df_augmented, aes(x = type2, y = type1)) +
   geom_tile(aes(fill = fill_value), color = df_augmented$border_color, size = 1) +
   geom_text(aes(label = n, color = text_color), size = 5, show.legend = FALSE) +
-  scale_fill_gradient(low = "white", high = "red", na.value = "white") +
+  scale_fill_gradient(low = "#ffeda0", high = "#f03b20", na.value = "white") +
   scale_color_identity() +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 35, hjust = 1)) +
-  labs(x = "Type Principal", y = "Type Secondaire") +
+  labs(
+    title = "Heatmap des Combinaisons de Types 1 / Types 2 des Pokémons avec un Type Secondaire",
+    subtitle = "Nombre de Pokémons par combinaison de types",
+    x = "Type Principal",
+    y = "Type Secondaire"
+  ) +
   coord_fixed()
 
 
