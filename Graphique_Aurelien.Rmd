@@ -1,0 +1,74 @@
+---
+title: "Graphique Aurélien"
+output: html_document
+date: "2025-04-20"
+---
+
+On va créer une heatmap pour visualiser les combinaisons de types de Pokémon.
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(forcats)
+
+#Ouverture du dataset
+df <- read.csv("data/Pokemon_data.csv", sep = ",")
+
+#On ne garde que les colonnes nécessaires : name, type1 et type2
+df <- df %>%
+  select(name, type1, type2) %>%
+  mutate(type1 = as.character(type1), type2 = as.character(type2))
+
+# Comptage
+df_filtered <- df %>%
+  filter(type2 != "None") %>%
+  count(type1, type2)
+
+# Totaux
+row_totals <- df_filtered %>%
+  group_by(type1) %>%
+  summarise(n = sum(n)) %>%
+  mutate(type2 = "Total")
+
+col_totals <- df_filtered %>%
+  group_by(type2) %>%
+  summarise(n = sum(n)) %>%
+  mutate(type1 = "Total")
+
+# Fusion
+df_augmented <- bind_rows(df_filtered, row_totals, col_totals)
+
+# Marquage des cellules de total
+df_augmented <- df_augmented %>%
+  mutate(
+    is_total = type1 == "Total" | type2 == "Total",
+    fill_value = ifelse(is_total, NA, n),
+    text_color = ifelse(is_total, "black", "gray10"),
+    border_color = ifelse(is_total, "black", "white")
+  )
+
+# Forcer l'ordre pour mettre "Total" à droite / en haut
+type1_levels <- c(sort(unique(df_augmented$type1[df_augmented$type1 != "Total"])), "Total")
+type2_levels <- c(sort(unique(df_augmented$type2[df_augmented$type2 != "Total"])), "Total")
+
+df_augmented <- df_augmented %>%
+  mutate(
+    type1 = factor(type1, levels = type1_levels),
+    type2 = factor(type2, levels = type2_levels)
+  )
+
+# Heatmap finale
+ggplot(df_augmented, aes(x = type2, y = type1)) +
+  geom_tile(aes(fill = fill_value), color = df_augmented$border_color, size = 1) +
+  geom_text(aes(label = n, color = text_color), size = 5, show.legend = FALSE) +
+  scale_fill_gradient(low = "white", high = "red", na.value = "white") +
+  scale_color_identity() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 35, hjust = 1)) +
+  labs(x = "Type Principal", y = "Type Secondaire") +
+  coord_fixed()
+
+
+```
+
