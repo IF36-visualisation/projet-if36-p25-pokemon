@@ -8,22 +8,17 @@ date: "2025-04-20"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r warning=FALSE}
 library(tidyverse)
-library(png)
-library(grid)
 library(ggimage)
 ```
 
 
 ```{r}
 popularity <- tibble(read.table("data/popularity.txt", header = TRUE, sep = ","))
-```
-
-
-```{r}
 pok_data <- tibble(read.csv2("data/Pokemon_data.csv", header = TRUE, sep=','))
 ```
+
 
 ```{r}
 merged <- popularity %>% left_join(pok_data %>% select(name, type1), by = c("Pokemon" = "name"))
@@ -76,19 +71,40 @@ type_colors <-c(
 
 ## Popularité des types de Pokemon
 
+
 ```{r}
-avg_votes <- mean(type_summary$AvgVotes)
+avg_votes <- mean(type_summary$TotalVotes) / sum(type_summary$TotalVotes) * 100
 
 type_summary %>%
-  ggplot(aes(x = reorder(type1, -AvgVotes), y = AvgVotes, fill=type1)) +
-  geom_col() +
-  scale_fill_manual(values = type_colors) +
-  geom_hline(yintercept = avg_votes, linetype = "dashed", color = "red", linewidth = 1, alpha=.5) +
-  annotate("text", x = 14, y = avg_votes + 8, label = "Popularité moyenne", color = "red", size = 4, hjust = 0) +
-  labs(title = "Popularité des types de Pokemon", subtitle = "Nombre moyen de votes par Pokemon", x = "Type", y = "Votes") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
   
-  geom_image(aes(image=img_path, y = AvgVotes), size=.2)
+  ggplot(aes(x = reorder(type1, -TotalVotes), 
+             y = TotalVotes / sum(TotalVotes) * 100, 
+             fill=type1)) +
+  geom_col() +
+  geom_col(aes(y = Count / sum(Count) * 100, fill = "Nombre de Pokémons"), alpha = 0.3, width = 0.6) +
+  
+  scale_fill_manual(
+    name = NULL,
+    values = c(type_colors, "Nombre de Pokémons" = "black"),
+    breaks = c("Nombre de Pokémons") # Only show the black bar legend
+  ) +
+  
+  geom_hline(yintercept = avg_votes, linetype = "dashed", color = "red", linewidth = 1, alpha=.5) +
+  annotate("text", x = 14, y = avg_votes + 1, label = "Popularité moyenne", color = "red", size = 4, hjust = 0) +
+  
+  labs(title = "Popularité des types de Pokemon", subtitle = "Pourcentage des votes par type", x = "Type", y = "%") +
+  
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = c(.9, .9)) +
+  
+  geom_image(aes(image=img_path, y = TotalVotes / sum(TotalVotes) * 100 + 1), size=.2)
 ```
+
+Les données utilisées pour ici sont issues d'un sondage dans lequel environ 50.000 personnes ont donné leur Pokémon favori. Ce graphique montre la répartition des votes ainsi que la distribution des Pokémon par type. (Pour les Pokémons ayant deux types, on ne considère que leur type principal). Les Pokémon dessinés sont ceux ayant reçu le plus de votes pour chaque type.  
+
+Tout d'abord, il est intéressant d'observer que les 3 types ayant reçu le plus grand nombre de vote sont les 3 types de base (Eau, Feu et Plante). Bien que le type Eau arrive en tête du trio, les Pokémons Eau étant assez largement les plus représentés, ils sont, en proportion, bien moins appréciés que les Pokémons Feu.   
+
+De même, le type Normal arrive en quatrième position, mais cela semble surtout s'expliquer par le nombre très important de Pokémons de ce type. Les types Insecte et Roche ont également reçu un nombre de vote très faible en comparaison de leur nombre.
+
+A l'inverse, les types Ténèbres, Spectre et Dragon ont été beaucoup cités malgré le nombre de Pokémons assez modeste.
 
