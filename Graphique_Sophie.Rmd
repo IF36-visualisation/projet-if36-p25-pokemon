@@ -1,0 +1,65 @@
+---
+title: "graphique_sophie"
+output: html_document
+date: "2025-04-23"
+---
+
+# Comparaison des base stats des Pokémons légendaires et des Pokémons normaux
+
+Question : Les Pokémon légdendaires sont-ils les plus forts ?
+
+Parmi tous les Pokémon existants, certains Pokémons sont considérés comme étant spéciaux : les Pokémon légendaires, iconiques à chaque jeu, accompagnés des Pokémon fabuleux. Introduits dans les jeux Pokémon X et Y, les méga-évolutions constituent également une catégorie à part. 
+
+Afin de savoir si ces Pokémon sont réellement plus puissants que les autres, nous allons observer la répartition des totaux des statistiques de base (abrégé "base stats") pour tous les Pokémons, en différenciant les légendaires des autres.
+
+On commence par importer les bibliothèques nécessaires :
+
+```{r}
+# importations des bibliothèques tidyverse
+library(ggplot2)
+library(dplyr)
+library(readr)
+```
+
+On lit ensuite nos données, qui proviennent du dataset  "The complete Pokemon dataset", qu'on place dans une dataframe `df` :
+
+```{r}
+# lecture du fichier des données dans le fichier .csv
+df = read_csv("Pokemon_data.csv")
+```
+
+Les conditions des Pokémons légendaires, mythiques ("mythical" en anglais) et méga-évolutions sont dispersés dans 3 colonnes différentes que nous allons fusionner en une seule colonne "group" :
+
+```{r}
+# création d'une nouvelle colonne "group", possédant comme valeur "legendary" si le pokémon est légendaire, etc. (et "regular" si le pokémon n'est pas spécial)
+df <- df %>% mutate(group = case_when(
+  (is_legendary == TRUE & is_mega ==TRUE) ~ "Mega Legendary",
+  is_legendary == TRUE ~ "Legendary",
+  is_mythical == TRUE ~ "Mythical",
+  is_mega == TRUE ~ "Mega",
+  TRUE ~ "Regular"
+))
+```
+
+On affiche enfin l'histogramme :
+
+```{r}
+# affichage de l'histogramme
+ggplot(df, aes(base_total)) +
+  geom_histogram(bins=80, aes(fill = group))  +
+  scale_fill_manual(values = alpha(c("slateblue", "skyblue","mediumpurple1", "steelblue", "wheat3"))) +
+  labs(
+    title = "Distribution des Pokémons selon le total de leurs base stats et leur groupe",
+    x = "Total des base stats",
+    y = "Compte",
+    fill = "Groupe")
+
+```
+
+On peut observer que les Pokémons légendaires, fabuleux et méga-évolués possèdent bien un total de statistiques plus élevé que les Pokémons normaux. Ils constituent la quasi majorité de tous les Pokémons ayant 580 ou plus de base stats. 
+On observe également que la plupart des Pokémons spéciaux ont le même montant de base stats : 600, 580 ou 680. 
+De plus, les Pokémons les plus "puissants", possédant le montant le plus élevé de base stats font partie d'un groupe rare : ils sont à la fois des méga-évolutions et des Pokémons légendaires (Mewtwo X, Mewtwo Y et méga Rayquaza). 
+Il existe tout de même quelques cas de Pokémons spéciaux avec des statistiques moyennes voire faibles. On peut penser au cas de Cosmog (200 de base stats), qui est un cas particulier parmi les Pokémons légendaires car il peut évoluer : sa dernière évolution, Solgaleo, possède lui 680 de base stats. 
+
+
+
