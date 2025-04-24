@@ -1,12 +1,11 @@
 ---
 title: "Livrable 1 - Pokemon"
-output: pdf_document
+author: "Musset Aurélien  \nArulraj Sinthujan  \nSchummer Lucas  \nKhuu Sophie\n"
 date: "2025-04-20"
-author: |
-    Musset Aurélien  
-    Arulraj Sinthujan  
-    Schummer Lucas  
-    Khuu Sophie
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 
@@ -23,7 +22,7 @@ Nous avons filtré les Pokémon qui n'ont pas de type secondaire (type2 = "None"
 Nous avons ensuite compté le nombre de Pokémon par combinaison de types, puis nous avons ajouté des totaux pour chaque type principal et secondaire.
 
 ***Code et Visualisation***  
-```{r}
+```{r warning=FALSE}
 library(ggplot2)
 library(dplyr)
 library(tidyr)
@@ -112,7 +111,7 @@ L'axe des abscisses représente le temps en année de 1996 à 2014.
 L'axe des ordonnées représente le nombre de ventes en millions de 0 à plus de 30 millions.
 
 ***Code et Visualisation***  
-```{r}
+```{r warning=FALSE}
 # Charger les packages
 library(tidyverse)
 
@@ -167,3 +166,108 @@ ggplot(pokemon_region_year, aes(x = Year, y = Sales, color = Region, group = Reg
 On peut remarquer que les jeux récents se vendent moins bien que les précédents. Le jeu Pokémon le plus vendu de l'histoire est sorti en 1996 avec plus de 30 millions de ventes, tandis que les plus récents peine à atteindre les 20 millions de ventes. 
 
 Cela peut être surprenant, si on pense à la popularité des jeux Pokémon dans les années 2000 et 2010 et à l'essor des jeux vidéo et des consoles, qui occupaient une place centrale dans les loisirs des jeunes à cette époque.
+
+
+# 3. Popularité des type de Pokémon
+
+
+***Objectif du graphique :***  
+Ici, nous allons répondre à la question suivante : **Quels sont les types de Pokémon préférés de la communauté ?**
+
+
+***Présentation :***  
+Pour réaliser ce graphique, nous avons combiné deux jeux de données : 
+
+- **The complete Pokemon dataset** : Statistiques complètes des Pokémons des 8 premières générations (notamment le type)
+- **Sondage de popularité** : Sondage réalisé en 2019 sur un forum de la communauté Pokémon recueillant le Pokémon préféré de 52000 votants
+
+Nous considérons ici seulement le premier type de chaque Pokémon (certains Pokémons ont un deuxième type, mais on peut considérer qu'il est moins caractérisant que le premier).  
+On affiche ici, pour chacun des types, le pourcentage de vote reçu par l'ensemble des Pokémons de ce type.  
+Pour mettre en perspective ces résultats, on affiche également la distribution des Pokémons par type. Les Pokémons dessinés sont les plus populaires pour chacun des types.
+
+
+***Code et Visualisation***  
+
+
+```{r warning=FALSE}
+library(tidyverse)
+library(ggimage)
+
+# Load data
+popularity <- tibble(read.table("data/popularity.txt", header = TRUE, sep = ","))
+pok_data <- tibble(read.csv2("data/Pokemon_data.csv", header = TRUE, sep=','))
+
+# Join datasets by Pokemon name
+merged <- popularity %>% left_join(pok_data %>% select(name, type1), by = c("Pokemon" = "name"))
+
+# Create aggregated data by Pokemon type
+type_summary <- merged %>%
+  filter(!is.na(type1)) %>%
+  group_by(type1) %>%
+  summarise(TotalVotes = sum(Number.of.votes), Count = n()) %>%
+  mutate(AvgVotes = TotalVotes / Count) %>%
+  arrange(desc(AvgVotes)) %>%
+  left_join(
+    # Select the most popular Pokemon for each type
+    merged %>%
+    filter(!is.na(type1)) %>%
+    group_by(type1) %>%
+    slice_max(Number.of.votes, n = 1) %>%
+    select(type1, Pokemon, Number.of.votes), 
+    by = "type1"
+  ) %>%
+  mutate(img_path = paste0("data/images/", tolower(Pokemon), ".png"))
+
+# Define colors of each type for graphical purpose
+type_colors <-c(
+	'Normal'= '#A8A77A',
+	'Fire' = '#EE8130',
+	'Water' = '#6390F0',
+	'Electric' = '#F7D02C',
+	'Grass' = '#7AC74C',
+	'Ice' = '#96D9D6',
+	'Fighting' = '#C22E28',
+	'Poison' = '#A33EA1',
+	'Ground' = '#E2BF65',
+	'Flying' = '#A98FF3',
+	'Psychic' = '#F95587',
+	'Bug' = '#A6B91A',
+	'Rock' = '#B6A136',
+	'Ghost' = '#735797',
+	'Dragon' = '#6F35FC',
+	'Dark' = '#705746',
+	'Steel' = '#B7B7CE',
+	'Fairy' = '#D685AD'
+)
+
+# Compute the average number of votes
+avg_votes <- mean(type_summary$TotalVotes) / sum(type_summary$TotalVotes) * 100
+
+# Draw graph
+type_summary %>%
+  ggplot(aes(x = reorder(type1, -TotalVotes), 
+             y = TotalVotes / sum(TotalVotes) * 100, 
+             fill=type1)) +
+  geom_col() +
+  scale_fill_manual(values = type_colors) +
+  geom_hline(yintercept = avg_votes, linetype = "dashed", color = "red", linewidth = 1, alpha=.5) +
+  geom_col(aes(y = Count / sum(Count) * 100), fill = "black", alpha = 0.3, width = 0.6) +
+  annotate("text", x = 14, y = avg_votes + 1, label = "Popularité moyenne", color = "red", size = 4, hjust = 0) +
+  labs(title = "Popularité des types de Pokemon", subtitle = "Nombre de votes par type", x = "Type", y = "%") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
+  
+  geom_image(aes(image=img_path, y = TotalVotes / sum(TotalVotes) * 100 + 1), size=.2)
+
+```
+
+
+***Analyse :***  
+
+Tout d'abord, il est intéressant d'observer que les 3 types ayant reçu le plus grand nombre de vote sont les 3 types de base (**Eau**, **Feu** et **Plante**). Presque 40% des votes se sont tournés vers ces types, notamment grâce aux Pokémons **starters** (Pokémons de départ) qui sont très populaires. Bien que le type **Eau** arrive en tête du trio, les Pokémons **Eau** étant assez largement les plus représentés, ils sont, en proportion, bien moins appréciés que les Pokémons **Feu**.   
+
+De même, le type **Normal** arrive en quatrième position, mais cela semble surtout s'expliquer par le nombre très important de Pokémons de ce type. Les types **Insecte** et **Roche** ont également reçu un nombre de vote très faible en comparaison de leur nombre.
+
+A l'inverse, les types **Ténèbres**, **Spectre** et **Dragon** ont été beaucoup cités malgré le nombre de Pokémons assez modeste.  
+
+Le grand gagnant de ce sondage apparaît assez clairement : il s'agit du type **Feu**
