@@ -27,7 +27,7 @@ Nous avons ensuite comparer à l'aide d'un barchart le nombre de ventes des jeux
 library(tidyverse)
 
 # Charger le dataset
-df <- read_csv("vgsales.csv")
+df <- read_csv("data/vgsales.csv")
 
 # 1. Filtrer les jeux Pokémon avec plus de 6 millions de ventes
 pokemon_games <- df %>%
