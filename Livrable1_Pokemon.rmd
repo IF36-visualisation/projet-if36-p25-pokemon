@@ -248,14 +248,29 @@ type_summary %>%
   ggplot(aes(x = reorder(type1, -TotalVotes), 
              y = TotalVotes / sum(TotalVotes) * 100, 
              fill=type1)) +
+  # Colored bars
   geom_col() +
-  scale_fill_manual(values = type_colors) +
   geom_hline(yintercept = avg_votes, linetype = "dashed", color = "red", linewidth = 1, alpha=.5) +
-  geom_col(aes(y = Count / sum(Count) * 100), fill = "black", alpha = 0.3, width = 0.6) +
+  
+  # Black bars
+  geom_col(aes(y = Count / sum(Count) * 100, fill = "Nombre de Pokémons"), alpha = 0.3, width = 0.6) +
+  
+  # Fake invisible layer to create "Nombre de Votes" legend
+  geom_col(aes(y = 0, fill = "Nombre de Votes"), show.legend = TRUE) +
+  
+  scale_fill_manual(
+    name = NULL,
+    values = c(type_colors, "Nombre de Pokémons" = "black", "Nombre de Votes" = "#6390F0"),
+    breaks = c("Nombre de Votes", "Nombre de Pokémons")
+  ) +
+  guides(
+    fill = guide_legend(override.aes = list(alpha = c(1, 0.3)))
+  ) +
+  
   annotate("text", x = 14, y = avg_votes + 1, label = "Popularité moyenne", color = "red", size = 4, hjust = 0) +
   labs(title = "Popularité des types de Pokemon", subtitle = "Nombre de votes par type", x = "Type", y = "%") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = c(0.85, 0.85)) +
   
   geom_image(aes(image=img_path, y = TotalVotes / sum(TotalVotes) * 100 + 1), size=.2)
 
@@ -271,3 +286,61 @@ De même, le type **Normal** arrive en quatrième position, mais cela semble sur
 A l'inverse, les types **Ténèbres**, **Spectre** et **Dragon** ont été beaucoup cités malgré le nombre de Pokémons assez modeste.  
 
 Le grand gagnant de ce sondage apparaît assez clairement : il s'agit du type **Feu**
+
+
+# 4. Comparaison des base stats des Pokémons légendaires et des Pokémons normaux
+
+***Objectif du graphique :***
+Ici, nous allons répondre à la question suivante : **Les Pokémons légdendaires sont-ils les plus forts ?**  
+Parmi tous les Pokémon existants, certains Pokémons sont considérés comme étant spéciaux : les Pokémon légendaires, iconiques à chaque jeu, accompagnés des Pokémon fabuleux. Introduits dans les jeux Pokémon X et Y, les méga-évolutions constituent également une catégorie à part. 
+
+***Présentation :***
+Afin de savoir si ces Pokémon sont réellement plus puissants que les autres, nous allons observer la répartition des totaux des statistiques de base (abrégé "base stats") pour tous les Pokémons, en différenciant les légendaires des autres.  
+Nous allons utiliser le dataset "The Complete Pokemon Dataset".  
+Les conditions des Pokémons légendaires, mythiques ("mythical" en anglais) et méga-évolutions sont dispersées dans 3 colonnes différentes que nous allons fusionner en une seule colonne "group".
+Enfin, nous affichons l'histogramme du total de base stats, en différenciant les Pokémons spéciaux par la couleur. 
+
+***Code et Visualisation***
+
+```{r}
+# importations des bibliothèques tidyverse
+library(ggplot2)
+library(dplyr)
+library(readr)
+```
+
+```{r}
+# ouverture du dataset
+df = read_csv("data/Pokemon_data.csv")
+```
+
+```{r}
+# création d'une nouvelle colonne "group", possédant comme valeur "legendary" si le pokémon est légendaire, etc. (et "regular" si le pokémon n'est pas spécial)
+df <- df %>% mutate(group = case_when(
+  (is_legendary == TRUE & is_mega ==TRUE) ~ "Mega Legendary",
+  is_legendary == TRUE ~ "Legendary",
+  is_mythical == TRUE ~ "Mythical",
+  is_mega == TRUE ~ "Mega",
+  TRUE ~ "Regular"
+))
+```
+
+```{r}
+# affichage de l'histogramme
+ggplot(df, aes(base_total)) +
+  geom_histogram(bins=80, aes(fill = group))  +
+  scale_fill_manual(values = alpha(c("slateblue", "skyblue","mediumpurple1", "steelblue", "wheat3"))) +
+  labs(
+    title = "Distribution des Pokémons selon le total de leurs base stats et leur groupe",
+    x = "Total des base stats",
+    y = "Compte",
+    fill = "Groupe")
+
+```
+
+***Analyse :***
+
+On peut observer que les Pokémons légendaires, fabuleux et méga-évolués possèdent bien un total de statistiques plus élevé que les Pokémons normaux. Ils constituent la quasi majorité de tous les Pokémons ayant 580 ou plus de base stats. 
+On observe également que la plupart des Pokémons spéciaux ont le même montant de base stats : 600, 580 ou 680. 
+De plus, les Pokémons les plus "puissants", possédant le montant le plus élevé de base stats font partie d'un groupe rare : ils sont à la fois des méga-évolutions et des Pokémons légendaires (Mega Mewtwo X, Mega Mewtwo Y et méga Rayquaza). 
+Il existe tout de même quelques cas de Pokémons spéciaux avec des statistiques moyennes voire faibles. On peut penser à Cosmog (200 de base stats), qui est un cas particulier parmi les Pokémons légendaires car il peut évoluer : sa dernière évolution, Solgaleo, possède lui 680 de base stats. 

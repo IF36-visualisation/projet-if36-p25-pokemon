@@ -85,14 +85,29 @@ type_summary %>%
   ggplot(aes(x = reorder(type1, -TotalVotes), 
              y = TotalVotes / sum(TotalVotes) * 100, 
              fill=type1)) +
+  # Colored bars
   geom_col() +
-  scale_fill_manual(values = type_colors) +
   geom_hline(yintercept = avg_votes, linetype = "dashed", color = "red", linewidth = 1, alpha=.5) +
-  geom_col(aes(y = Count / sum(Count) * 100), fill = "black", alpha = 0.3, width = 0.6) +
+  
+  # Black bars
+  geom_col(aes(y = Count / sum(Count) * 100, fill = "Nombre de Pokémons"), alpha = 0.3, width = 0.6) +
+  
+  # Fake invisible layer to create "Nombre de Votes" legend
+  geom_col(aes(y = 0, fill = "Nombre de Votes"), show.legend = TRUE) +
+  
+  scale_fill_manual(
+    name = NULL,
+    values = c(type_colors, "Nombre de Pokémons" = "black", "Nombre de Votes" = "#6390F0"),
+    breaks = c("Nombre de Votes", "Nombre de Pokémons")
+  ) +
+  guides(
+    fill = guide_legend(override.aes = list(alpha = c(1, 0.3)))
+  ) +
+  
   annotate("text", x = 14, y = avg_votes + 1, label = "Popularité moyenne", color = "red", size = 4, hjust = 0) +
   labs(title = "Popularité des types de Pokemon", subtitle = "Nombre de votes par type", x = "Type", y = "%") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = c(0.85, 0.85)) +
   
   geom_image(aes(image=img_path, y = TotalVotes / sum(TotalVotes) * 100 + 1), size=.2)
 
