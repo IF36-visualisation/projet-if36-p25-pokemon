@@ -1,0 +1,141 @@
+---
+title: "Graphique_Sinthujan"
+author: "Sinthujan ARULRAJ"
+date: "2025-04-21"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+# 1. Visualisation de la popularité des jeux vidéos Pokémon à l'aide du nombre de ventes de 1996 à 2014 
+
+***Objectif du graphique :***  
+Ici, nous allons répondre aux questions suivantes : **À quel point les jeux vidéos Pokémon sont-ils populaires ? Les jeux récents sont-ils plus populaires que les anciens ?**
+Les jeux vidéos Pokémon existent depuis très longtemps et de nouveaux jeux ne cessent de sortir.
+À l'aide de ce graphique, le but est d'observer si les jeux vidéos Pokémon occupent une place importante sur le marché des jeux vidéos et de voir comment évolue cette place au cours du temps.
+Nous avons créée un barchart permettant de comparer chaque jeu vidéo Pokémon avec le jeu le plus vendu de la même année.
+
+***Présentation :***  
+Pour réaliser ce graphique, nous avons utilisé les données du dataset "vgsales.csv".
+Nous avons conservé uniquement les jeux Pokémon qui ont des ventes globales supérieures à 6 millions afin de conserver uniquement les jeux principaux de Pokémon et éliminer tous les spin-off.
+Nous avons ensuite comparer à l'aide d'un barchart le nombre de ventes des jeux Pokémon avec le jeu vidéo le plus vendu de la même année. On peut voir également la position du jeu Pokémon parmi les ventes globales de l'année.
+
+***Code et Visualisation*** 
+```{r warning=FALSE}
+# Charger les bibliothèques
+library(tidyverse)
+
+# Charger le dataset
+df <- read_csv("vgsales.csv")
+
+# 1. Filtrer les jeux Pokémon avec plus de 6 millions de ventes
+pokemon_games <- df %>%
+  filter(str_detect(Name, "(?i)pokemon") & Global_Sales > 6) %>%
+  drop_na(Year, Global_Sales) %>%
+  filter(is.finite(Global_Sales))
+
+# 2. Identifier le jeu le plus vendu par année
+top_games_by_year <- df %>%
+  drop_na(Year, Global_Sales) %>%
+  filter(is.finite(Global_Sales)) %>%
+  group_by(Year) %>%
+  slice_max(order_by = Global_Sales, n = 1) %>%
+  ungroup()
+
+# 3. Calculer le rang de chaque jeu Pokémon par année
+df_with_rank <- df %>%
+  drop_na(Year, Global_Sales) %>%
+  filter(is.finite(Global_Sales)) %>%
+  group_by(Year) %>%
+  mutate(Rank = rank(-Global_Sales)) %>%
+  ungroup()
+
+# 4. Associer chaque jeu Pokémon à son jeu top de l'année et ajouter le rang
+comparison_df <- pokemon_games %>%
+  left_join(top_games_by_year, by = "Year", suffix = c("_pokemon", "_top")) %>%
+  left_join(df_with_rank %>% filter(str_detect(Name, "(?i)pokemon")), by = c("Year", "Name_pokemon" = "Name")) %>%
+  select(Year,
+         Pokemon_Game = Name_pokemon,
+         Pokemon_Sales = Global_Sales_pokemon,
+         Top_Game = Name_top,
+         Top_Game_Sales = Global_Sales_top,
+         Pokemon_Rank = Rank)
+
+# 5. Préparer les données pour un bar chart
+plot_data <- comparison_df %>%
+  drop_na(Year, Pokemon_Sales, Top_Game_Sales) %>%
+  filter(is.finite(Pokemon_Sales), is.finite(Top_Game_Sales)) %>%
+  pivot_longer(cols = c(Pokemon_Sales, Top_Game_Sales),
+               names_to = "Type",
+               values_to = "Sales") %>%
+  mutate(
+    Game_Name = ifelse(Type == "Pokemon_Sales", Pokemon_Game, Top_Game),
+    Color = ifelse(Type == "Pokemon_Sales", "Pokemon_Game", "Top_Game"),
+    Label = gsub("(?i)pokemon", "", Game_Name, ignore.case = TRUE),
+    Rank_Label = ifelse(Type == "Pokemon_Sales", paste(Pokemon_Rank), NA)
+  )
+
+# 6. Faire un bar chart avec un thème sombre personnalisé
+ggplot(plot_data, aes(x = factor(Year), y = Sales, fill = Color)) +
+  geom_bar(stat = "identity", position = position_dodge2(width = 0.9, preserve = "single"),
+           width = 0.7) +
+  labs(title = "Comparaison des ventes de jeux vidéos: Pokémon vs Top Vente par Année",
+       x = "Année",
+       y = "Ventes Globales (Millions)") +
+  scale_fill_manual(values = c("Pokemon_Game" = "#1f77b4", "Top_Game" = "#ff7f0e"),
+                    labels = c("Jeu Pokémon", "Top Jeu Année"),
+                    name = "Type de Jeu") +
+  scale_y_continuous(limits = c(0, 100)) +
+  theme_minimal(base_family = "sans") +  # Changement de thème
+  theme(
+    axis.text.x = element_text(angle = 70, hjust = 1, size = 10, face = "bold", color = "black"),
+    axis.text.y = element_text(size = 10, face = "bold", color = "black"),
+    axis.title.x = element_text(face = "bold", size = 12, color = "black"),
+    axis.title.y = element_text(face = "bold", size = 12, color = "black"),
+    plot.title = element_text(face = "bold", size = 12, hjust = 0.5, color = "black"),
+    legend.title = element_text(face = "bold", color = "black"),
+    legend.text = element_text(face = "bold", color = "black"),
+    axis.ticks = element_line(color = "black", size = 0.7),
+    axis.line = element_line(color = "black", size = 0.7),
+    plot.margin = margin(t = 30, r = 10, b = 10, l = 10)
+  ) +
+  geom_text(aes(label = Label),
+            position = position_dodge(width = 0.8),
+            vjust = 0.25,
+            hjust = -0.05,
+            size = 3.5,
+            colour = "black",
+            angle = 90) +
+  
+  geom_text(aes(label = Rank_Label, y = Sales / 2),
+            position = position_dodge2(width = 0.9, preserve = "single"),
+            vjust = 0.5,
+            hjust = 0.25,
+            size = 4,
+            colour = "black",
+            fontface = "bold") + 
+  
+  annotate("text",
+           x = Inf, y = Inf,
+           label = "Le chiffre à l'intérieur des barres indique\nla position du jeu Pokémon parmi\nles ventes globales de l'année",
+           hjust = 1.0, vjust = 1.5,
+           size = 3,
+           color = "black",
+           fontface = "italic")
+
+
+```
+
+***Analyse :***
+
+On peut observer que les jeux Pokémon récents se vendent globalement moins bien que les précédents. On peut remarquer cela car les 2 jeux Pokémon les plus vendus de l'histoire sont sortis en **1996 et 1999** avec respectivement **plus de 30 et 20 millions** de ventes, tandis que les plus récents peine à atteindre les **20 millions** de ventes. 
+
+Cependant à l'aide des rangs des jeux Pokémon parmi les ventes globales de chaque année, on peut voir qu'à chaque sortie d'un nouveau jeu Pokémon, ce dernier figure presque toujours parmi le **TOP 5** des ventes de l'année. Récemment, il est rare de voir des jeux Pokémon en première position comme on avait pu le voir en **1996 et 1999**. 
+Mais on peut conclure que les jeux Pokémon occupe toujours une place très importante sur le marché du jeu vidéo.
+On peut expliquer cette baisse des ventes par une grosse concurrence et un manque de nouveauté dans le contenu.
+
+ 
+
+
+
