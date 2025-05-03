@@ -1,19 +1,20 @@
----
-title: "Graphique Aurélien"
-output: html_document
-date: "2025-04-20"
----
+# 1. Visualisation des différents combos de types de Pokémon 
 
-On va créer une heatmap pour visualiser les combinaisons de types de Pokémon.
-On va utiliser le dataset `Pokemon_data.csv` qui contient les informations sur les Pokémon, y compris leurs types.
-On va cependant retirer les pokémons qui n'ont pas de type secondaire (type2 = "None").
-On va aussi ajouter des totaux pour chaque type principal et secondaire, et on va marquer les cellules de total avec une couleur différente.
+***Objectif du graphique :***  
+Ici, nous allons répondre à la question suivante : **Quel est le nombre de Pokémon par combinaison de types ?**
+En effet, les pokémons possèdent un type principal (type1) et un type secondaire (type2). Le but est de voir ici, si ces types sont équitablements répartis, où si on peut observer des tendances.
+Nous allons donc créer une heatmap permettant de visualiser les combinaisons de types de Pokémon.
 
-```{r}
+***Présentation :***  
+Pour réaliser ce graphique, nous avons utilisé les données du dataset "Pokemon_data".
+Nous avons filtré les Pokémon qui n'ont pas de type secondaire (type2 = "None").
+Nous avons ensuite compté le nombre de Pokémon par combinaison de types, puis nous avons ajouté des totaux pour chaque type principal et secondaire.
+
+***Code et Visualisation***  
+```{r warning=FALSE}
 library(ggplot2)
 library(dplyr)
 library(tidyr)
-library(forcats)
 
 #Ouverture du dataset
 df <- read.csv("data/Pokemon_data.csv", sep = ",")
@@ -64,7 +65,7 @@ df_augmented <- df_augmented %>%
 # Heatmap finale
 ggplot(df_augmented, aes(x = type2, y = type1)) +
   geom_tile(aes(fill = fill_value), color = df_augmented$border_color, size = 1) +
-  geom_text(aes(label = n, color = text_color), size = 5, show.legend = FALSE) +
+  geom_text(aes(label = n, color = text_color), show.legend = FALSE) +
   scale_fill_gradient(low = "#ffeda0", high = "#f03b20", na.value = "white") +
   scale_color_identity() +
   theme_minimal() +
@@ -72,11 +73,81 @@ ggplot(df_augmented, aes(x = type2, y = type1)) +
   labs(
     title = "Heatmap des Combinaisons de Types 1 / Types 2 des Pokémons avec un Type Secondaire",
     subtitle = "Nombre de Pokémons par combinaison de types",
-    x = "Type Principal",
-    y = "Type Secondaire"
+    x = "Type Secondaire",
+    y = "Type Principal"
   ) +
   coord_fixed()
-
-
 ```
+
+***Analyse :***  
+Nous pouvons observer que la majorité des Pokémon possèdent un type principal de type "Eau" (Water) et un type secondaire de type "Vol" (Flying).
+Nous pouvons également observer que les Pokémon de type "Normal" (Normal) possèdent le plus fréquemment un type secondaire de type "Vol" (Flying) et que les Pokémon de type "Plante" (Grass) possèdent souvent un type secondaire de type "Poison" (Poison).**Ce sont les combos les plus fréquents**.
+On peut également remarquer que de nombreux combos n'existent pas, comme par exemple "Poison" (Poison) et "Acier" (Steel), ou encore "Fée" (Fairy) et "Combat" (Fighting). Cela peut sembler logique pour certaines combinaisons (par exemple "Feu" (Fire) et "Eau" (Water)), mais il est intéressant de le noter.
+Malgré tout, on peut remarquer que la plupart des combinaisons sont représentées par la même echelle de couleur, ce qui signifie qu'il n'y a pas de combo de type qui se démarque vraiment des autres (hormis ceux notés au début).  
+
+
+# 2. Relation entre les attaques / types
+***Code et Visualisation***  
+```{r warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+#Ouverture du dataset
+df <- read.csv("data/Pokemon_data.csv", sep = ",")
+
+#On ne garde que les colonnes nécessaires
+df <- df %>%
+  select(name, type1, against_bug, against_dark, against_dragon,
+         against_electric, against_fairy, against_fighting, against_fire,
+         against_flying, against_ghost, against_grass, against_ground,
+         against_ice, against_normal, against_poison, against_psychic,
+         against_rock, against_steel, against_water)
+
+#On calcule la moyenne des coefficients "against" par type
+mean_against_by_type <- df %>%
+  group_by(type1) %>%
+  summarise(
+    mean_against_bug = mean(against_bug, na.rm = TRUE),
+    mean_against_dark = mean(against_dark, na.rm = TRUE),
+    mean_against_dragon = mean(against_dragon, na.rm = TRUE),
+    mean_against_electric = mean(against_electric, na.rm = TRUE),
+    mean_against_fairy = mean(against_fairy, na.rm = TRUE),
+    mean_against_fighting = mean(against_fighting, na.rm = TRUE),
+    mean_against_fire = mean(against_fire, na.rm = TRUE),
+    mean_against_flying = mean(against_flying, na.rm = TRUE),
+    mean_against_ghost = mean(against_ghost, na.rm = TRUE),
+    mean_against_grass = mean(against_grass, na.rm = TRUE),
+    mean_against_ground = mean(against_ground, na.rm = TRUE),
+    mean_against_ice = mean(against_ice, na.rm = TRUE),
+    mean_against_normal = mean(against_normal, na.rm = TRUE),
+    mean_against_poison = mean(against_poison, na.rm = TRUE),
+    mean_against_psychic = mean(against_psychic, na.rm = TRUE),
+    mean_against_rock = mean(against_rock, na.rm = TRUE),
+    mean_against_steel = mean(against_steel, na.rm = TRUE),
+    mean_against_water = mean(against_water, na.rm = TRUE)
+  )
+
+# Transformation des données pour la heatmap
+heatmap_data <- mean_against_by_type %>%
+  pivot_longer(
+    cols = starts_with("mean_against"),
+    names_to = "against_type",
+    values_to = "mean_value"
+  ) %>%
+  mutate(against_type = gsub("mean_against_", "", against_type))
+
+# Création de la heatmap
+ggplot(heatmap_data, aes(x = against_type, y = type1, fill = mean_value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient(low = "blue", high = "red", name = "Moyenne") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    title = "Heatmap des moyennes des coefficients 'against' par type ",
+    x = "Type de résistance",
+    y = "Type de Pokémon"
+  )
+```
+
 

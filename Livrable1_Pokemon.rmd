@@ -77,7 +77,7 @@ df_augmented <- df_augmented %>%
 ggplot(df_augmented, aes(x = type2, y = type1)) +
   geom_tile(aes(fill = fill_value), color = df_augmented$border_color, size = 1) +
   geom_text(aes(label = n, color = text_color), show.legend = FALSE) +
-  scale_fill_gradient(low = "#ffeda0", high = "#f03b20", na.value = "white") +
+  scale_fill_gradient(low = "#ffeda0", high = "#f03b20", na.value = "white", name = "Nombre de Pokémon") +
   scale_color_identity() +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 35, hjust = 1)) +
