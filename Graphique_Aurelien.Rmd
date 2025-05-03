@@ -86,10 +86,10 @@ On peut également remarquer que de nombreux combos n'existent pas, comme par ex
 Malgré tout, on peut remarquer que la plupart des combinaisons sont représentées par la même echelle de couleur, ce qui signifie qu'il n'y a pas de combo de type qui se démarque vraiment des autres (hormis ceux notés au début).  
 
 
-# 2. Resistance d'un type de Pokémon face à un autre type de Pokémon
+# 2. Efficacité  d'un type de Pokémon face à un autre type de Pokémon
 ***Objectif du graphique :***  
-Ici, nous allons répondre à la question suivante : **Face à quel type adverse chaque type resiste t-il le mieux ?**
-En effet, chaque pokémon un coefficient de dégats subits pour chaque type adverse. Par exemple, si un pokémon a un coéfficent de 2 pour le type Feu, il recevra 2 fois plus de dégats par attaque de type Feu.
+Ici, nous allons répondre à la question suivante : **Face à quel type adverse chaque type de Pokémon est-il meilleur ?**
+En effet, chaque pokémon possède un coefficient de dégats subits pour chaque type adverse. Par exemple, si un pokémon a un coéfficent de 2 pour le type Feu, il recevra 2 fois plus de dégats par attaque de type Feu.
 Le but est de voir ici, si ces coefficients sont équitablement répartis, où si on peut observer des tendances.
 
 ***Présentation :***  
@@ -149,23 +149,29 @@ heatmap_data <- mean_against_by_type %>%
   mutate(against_type = gsub("mean_against_", "", against_type))
 
 # Création de la heatmap
-ggplot(heatmap_data, aes(x = against_type, y = type1, fill = mean_value)) +
+ggplot(heatmap_data, aes(x = type1, y = against_type, fill = mean_value)) +
   geom_tile(color = "white") +
   geom_text(aes(label = round(mean_value, 2)), color = "black", size = 3) + # Ajout des labels
-  scale_fill_gradient(low = "#d0ff00", high = "red", name = "Moyenne") +
+  scale_fill_gradient2(
+    low = "blue",    # Couleur pour les valeurs basses (proche de 0)
+    mid = "white",   # Couleur neutre pour la valeur 1
+    high = "red",    # Couleur pour les valeurs hautes (proche de 2)
+    midpoint = 1,    # Point central du dégradé
+    name = "Moyenne" # Légende de l'échelle
+  ) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(
-    title = "Heatmap des moyennes des coefficients de dégâts subits par type, pour chaque type adverse",
-    x = "Type du Pokémon adverse",
-    y = "Type du Pokémon"
+    title = "Heatmap des moyennes des coefficients de dégâts infligés par type, pour chaque type adverse",
+    x = "Type du Pokémon attaqué",
+    y = "Type du Pokémon qui attaque"
   )
 ```
 
 
 ***Analyse :***  
-Nous pouvons observer grâce à cette heatmap que le types de Pokémon ont une réèlle influence sur les dégats subits et donc l'issu d'un combat.
-En effet, les dégats subits sont multipliés par des coefficients qui varient énormément selon le type adverse. Par exemple, un pokémon de type "Feu" (Fire) subira 2 fois plus de dégats face à un Pokémon de type "Eau" (Water), mais seulement 0.5 fois moins de dégats face à un Pokémon de type "Plante" (Grass).
+Nous pouvons observer grâce à cette heatmap que le types de Pokémon ont une réèlle influence sur les dégats infligés / subits et donc l'issu d'un combat.
+En effet, les dégats reçus sont multipliés par des coefficients qui varient énormément selon le type adverse. Par exemple, un pokémon de type "Feu" (Fire) subira 2 fois plus de dégats face à un Pokémon de type "Eau" (Water), mais seulement 0.5 fois moins de dégats face à un Pokémon de type "Plante" (Grass).
 Nous pouvons également observer que certains types de Pokémon sont plus résistants que d'autres. Par exemple, les Pokémon de type "Acier" (Steel) subissent moins de dégats face à la plupart des types adverses, tandis que les Pokémon de type "Normal" (Normal) subissent plus de dégats face à la plupart des types adverses.
 Ensuite, nous pouvons également observer que certains types de Pokémon sont plus efficaces que d'autres. Par exemple, les Pokémon de type "Dragon" (Dragon) infligent plus de dégats face à la plupart des types adverses, tandis que les Pokémon de type "Fée" (Fairy) infligent moins de dégats face à la plupart des types adverses.
-Enfin, on peut noter que certains types de pokémons sont immunisés à certains types adverses, comme par exemple les Pokémon de type "Vol" (Flying) face aux attaques de type "Sol" (Ground). Cela peut être très intéressant à prendre en compte lors d'un combat, car cela peut faire la différence entre la victoire et la défaite. 
+Enfin, on peut noter que certains types de pokémons sont immunis à certains types adverses, comme par exemple les Pokémon de type "Vol" (Flying) face aux attaques de type "Sol" (Ground). Cela peut être très intéressant à prendre en compte lors d'un combat, car cela peut faire la différence entre la victoire et la défaite. 
