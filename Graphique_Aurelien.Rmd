@@ -88,9 +88,9 @@ Malgré tout, on peut remarquer que la plupart des combinaisons sont représent�
 
 # 2. Efficacité  d'un type de Pokémon face à un autre type de Pokémon
 ***Objectif du graphique :***  
-Ici, nous allons répondre à la question suivante : **Face à quel type adverse chaque type de Pokémon est-il meilleur ?**
+Ici, nous allons répondre à la question suivante : **Face à quel type adverse chaque type d'attaque est-il meilleur ?**
 En effet, chaque pokémon possède un coefficient de dégats subits pour chaque type adverse. Par exemple, si un pokémon a un coéfficent de 2 pour le type Feu, il recevra 2 fois plus de dégats par attaque de type Feu.
-Le but est de voir ici, si ces coefficients sont équitablement répartis, où si on peut observer des tendances.
+Le but est de voir ici, si ces coefficients sont équitablement répartis, où si on peut observer des tendances en fonction du type principal du pokémon.
 
 ***Présentation :***  
 Pour réaliser ce graphique, nous avons utilisé les données du dataset "Pokemon_data".
@@ -162,16 +162,15 @@ ggplot(heatmap_data, aes(x = type1, y = against_type, fill = mean_value)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(
-    title = "Heatmap des moyennes des coefficients de dégâts infligés par type, pour chaque type adverse",
-    x = "Type du Pokémon attaqué",
-    y = "Type du Pokémon qui attaque"
+    title = "Heatmap des moyennes des coefficients de dégâts infligés par type d'attaque, pour chaque type pricipal du pokémon adverse",
+    x = "Type principal du Pokémon attaqué",
+    y = "Type de l'attaque"
   )
 ```
-
 
 ***Analyse :***  
 Nous pouvons observer grâce à cette heatmap que le types de Pokémon ont une réèlle influence sur les dégats infligés / subits et donc l'issu d'un combat.
 En effet, les dégats reçus sont multipliés par des coefficients qui varient énormément selon le type adverse. Par exemple, un pokémon de type "Feu" (Fire) subira 2 fois plus de dégats face à un Pokémon de type "Eau" (Water), mais seulement 0.5 fois moins de dégats face à un Pokémon de type "Plante" (Grass).
 Nous pouvons également observer que certains types de Pokémon sont plus résistants que d'autres. Par exemple, les Pokémon de type "Acier" (Steel) subissent moins de dégats face à la plupart des types adverses, tandis que les Pokémon de type "Normal" (Normal) subissent plus de dégats face à la plupart des types adverses.
 Ensuite, nous pouvons également observer que certains types de Pokémon sont plus efficaces que d'autres. Par exemple, les Pokémon de type "Dragon" (Dragon) infligent plus de dégats face à la plupart des types adverses, tandis que les Pokémon de type "Fée" (Fairy) infligent moins de dégats face à la plupart des types adverses.
-Enfin, on peut noter que certains types de pokémons sont immunis à certains types adverses, comme par exemple les Pokémon de type "Vol" (Flying) face aux attaques de type "Sol" (Ground). Cela peut être très intéressant à prendre en compte lors d'un combat, car cela peut faire la différence entre la victoire et la défaite. 
+Enfin, on peut noter que certains types de pokémons sont immunisés face à certains types adverses, comme par exemple les Pokémon de type "Vol" (Flying) face aux attaques de type "Sol" (Ground). Cela peut être très intéressant à prendre en compte lors d'un combat, car cela peut faire la différence entre la victoire et la défaite. 
