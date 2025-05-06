@@ -1,7 +1,8 @@
 ---
 title: "Projet"
-output: html_document
-date: "2025-04-20"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
 ---
 
 ```{r setup, include=FALSE}
@@ -123,4 +124,55 @@ De même, le type **Normal** arrive en quatrième position, mais cela semble sur
 A l'inverse, les types **Ténèbres**, **Spectre** et **Dragon** ont été beaucoup cités malgré le nombre de Pokémons assez modeste.  
 
 Le grand gagnant de ce sondage apparaît assez clairement : il s'agit du type **Feu**
+
+
+
+## Répartition des types par génération
+
+
+
+
+```{r, fig.width=8, fig.height=8}
+library(tidyverse)
+
+pok_data <- tibble(read.csv2("data/Pokemon_data.csv", header = TRUE, sep=','))
+
+pok_types <- pok_data %>%
+  pivot_longer(cols = c(type1, type2), names_to = "slot", values_to = "type") %>%
+  filter(type != "None") %>%
+  mutate(
+    dummy = "types"
+  )
+
+pok_types %>%
+  ggplot(aes(x = factor(generation), fill = type)) +
+  geom_bar(position = "stack") +  
+  geom_text(stat = "count", aes(label = after_stat(count)), 
+            position = position_stack(vjust = 0.5), size = 3, color = "white") +
+
+  scale_fill_manual(values = type_colors) +
+  labs(
+    title = "Répartition des Pokémons par type pour chaque génération", 
+    x = "Génération", 
+    y = "Nombre de Pokémons", 
+    fill = "Type") +
+  scale_x_discrete(labels = c(
+    `1` = "Gen. I :\nKanto",
+    `2` = "Gen. II :\nJohto",
+    `3` = "Gen. III :\nHoenn",
+    `4` = "Gen. IV :\nSinnoh",
+    `5` = "Gen. V :\nUnys",
+    `6` = "Gen. VI :\nKalos",
+    `7` = "Gen. VII :\nAlola",
+    `8` = "Gen. VIII :\nGalar"
+  )) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 10, face = 'bold', margin = margin(t = -20)),
+  )
+```
+
+
+
 
