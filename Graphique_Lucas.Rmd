@@ -6,7 +6,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, results = 'hide', warning = FALSE)
 ```
 
 ***Objectif du graphique :***  
@@ -24,7 +24,7 @@ On affiche ici, pour chacun des types, le pourcentage de vote reçu par l'ensemb
 Pour mettre en perspective ces résultats, on affiche également la distribution des Pokémons par type. Les Pokémons dessinés sont les plus populaires pour chacun des types.
 
 
-***Code et Visualisation***  
+***Visualisation***  
 
 
 ```{r warning=FALSE}
@@ -127,10 +127,20 @@ Le grand gagnant de ce sondage apparaît assez clairement : il s'agit du type **
 
 
 
-## Répartition des types par génération
+# X. Répartition des types par génération
 
 
+***Objectif du graphique :***  
+Ici, nous allons répondre à la question suivante : **Les types de Pokémons sont-ils répartis de manière homogène entre les générations ?**
 
+
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé le jeu de données **The complete Pokemon dataset**.  
+Pour les Pokémons possédant un double type (Normal-Vol par exemple), les deux types sont pris en compte sur ce graphique. **Il ne faut donc pas** interpréter la hauteur totale des barres comme le nombre de Pokémons introduits par génération
+
+
+***Visualisation*** 
 
 ```{r, fig.width=8, fig.height=8}
 library(tidyverse)
@@ -172,6 +182,252 @@ pok_types %>%
     axis.text.x = element_text(size = 10, face = 'bold', margin = margin(t = -20)),
   )
 ```
+
+***Analyse :***  
+
+De manière générale, on voit que la répartition des types est assez proche d'une génération à l'autre. Cependant, on peut noter quelques exceptions intéressantes : 
+
+- Le nombre très élevé de Pokémons **Poison** dans la Première Génération
+- La proportion de Pokémons de type **Sol** qui était relativement élevée dans les 5 premières générations alors qu'elle est quasiment nulle dans les 3 dernières générations
+
+
+# X. Tournois Pokémons dans le monde
+
+
+***Objectif du graphique :***  
+Ici, nous allons répondre à deux questions : 
+
+- **Quels sont les pays qui organisent le plus de tournois Pokémon ?**
+- **Quelles sont les nationalités qui ont le plus remporté de tournois ?**
+
+
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé le jeu de données **Pokemon TCG - All Tournaments Decks**.  
+L'objectif du graphique, au delà de répondre aux deux questions ci-dessus, est également de voir si l'on observe une corrélation entre ces deux facteurs
+
+
+***Visualisation*** 
+
+
+```{r, fig.width=10, fig.height=6}
+library(tidyverse)
+library(maps)
+
+world_map <- map_data("world")
+tournaments <- tibble(read.csv2("data/tournaments.csv", header = TRUE, sep=','))
+
+winners_by_country <- tournaments %>%
+  select(ranking_player_tournament, id_tournament, country_player) %>%
+  distinct() %>%
+  filter(ranking_player_tournament == 1) %>%
+  count(country_player, name = "winners")
+
+tournaments_by_country <- tournaments %>%
+  select(id_tournament, country_tournament) %>%
+  distinct() %>%
+  count(country_tournament, name = "tournaments")
+
+country_data <- winners_by_country %>%
+  merge(tournaments_by_country, by.x = "country_player", by.y = "country_tournament", all = TRUE) %>%
+  mutate_all(~replace_na(.,0))
+
+# Manually change the name of some countries to match between datasets
+country_data$country_player[country_data$country_player == "Great Britain"] <- "UK"
+country_data$country_player[country_data$country_player == "Korea"] <- "South Korea"
+country_data$country_player[country_data$country_player == "United States"] <- "USA"
+
+map_data_joined <- world_map %>%
+  left_join(country_data, by = c("region" = "country_player"))
+
+centroids <- map_data_joined %>%
+  group_by(region) %>%
+  summarize(
+    long = mean(range(long, na.rm = TRUE)),
+    lat = mean(range(lat, na.rm = TRUE)),
+    tournaments = first(tournaments)
+  ) %>%
+  filter(!is.na(tournaments))
+
+# Manually adjust the centroid of some countries
+centroids$long[centroids$region == "USA"] <- -97.6
+centroids$lat[centroids$region == "USA"] <- 40.30
+centroids$long[centroids$region == "Australia"] <- 136.5
+centroids$lat[centroids$region == "Australia"] <- -25.4
+centroids$long[centroids$region == "Canada"] <- -100
+centroids$lat[centroids$region == "Canada"] <- 54
+centroids$long[centroids$region == "Norway"] <- 9
+centroids$lat[centroids$region == "Norway"] <- 62
+centroids$long[centroids$region == "Japan"] <- 139
+centroids$lat[centroids$region == "Japan"] <- 35
+centroids$long[centroids$region == "UK"] <- -2
+centroids$lat[centroids$region == "UK"] <- 53
+centroids$long[centroids$region == "Brazil"] <- -50
+centroids$lat[centroids$region == "Brazil"] <- -9
+centroids$long[centroids$region == "Chile"] <- -71
+centroids$lat[centroids$region == "Chile"] <- -32
+
+map_data_joined %>%
+  
+  ggplot() + 
+  
+  geom_polygon(aes(x = long, y = lat, group = group, fill = winners), 
+               color = "white") +
+
+  # Add points sized by number of tournaments organized
+  geom_point(data = centroids %>% filter(tournaments > 0),
+             aes(x = long, y = lat, size = tournaments),
+             color = "black", alpha = 0.35) +
+
+  geom_text(data = centroids %>% filter(tournaments > 0),
+            aes(x = long, y = lat, label = tournaments),
+            size = 3, color = "white", fontface = "bold") +
+
+  scale_fill_gradient(
+    low = "#f2c1c1",
+    high = "#a30000",
+    na.value = "gray90",
+    name = "Victoires"
+  ) +
+  
+  scale_size_continuous(
+    range = c(4, 15),
+    name = "Tournois\norganisés"
+  ) +
+  
+  annotate("text",
+    x = Inf, y = Inf,
+    label = "Les chiffres indiquent pour chaque pays\nle nombre de tournois organisés      ",
+    hjust = 1.0, vjust = 1.5,
+    size = 3,
+    color = "black",
+    fontface = "italic") +
+  
+  coord_fixed(ratio = 1.3, 
+    xlim = c(-170, 180), 
+    ylim = c(-55, 80)
+  ) +
+  labs(title = "Nombre de tournois organisés et remportés par pays/nationalité") +
+  theme_minimal() +
+  theme(
+    plot.title = (element_text(hjust = 0.5)),
+    plot.margin = margin(5, 5, 5, 5),
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    legend.title.align = 0.5)
+
+```
+
+***Analyse :***  
+
+La corrélation entre le nombre de tournois organisés et le nombre de tournois remportés apparaît très clairement sur cette carte. Cela semble assez logique, ces deux données étant de bons indicateurs du développement de la culture Pokémon dans chaque pays.  
+Cette culture semble être surtout développée dans 3 régions du monde : 
+
+- **L'Europe**
+- **L'Amérique**
+- **L'Océanie** et **l'Asie du Sud-Est**
+
+Deux pays se démarquent encore des autres : le **Japon**, pays d'origine de la licence et les **Etats-Unis** 
+
+
+# X-Cartes les plus utilisés en tournoi
+
+***Objectif du graphique :***  
+Ici, nous allons répondre à la question suivante : **Quelles sont les cartes les plus utilisées en tournoi officiel Pokémon ?**
+
+
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé le jeu de données **Pokemon TCG - All Tournaments Decks**.  
+Ce graphique prend en compte l'ensemble des decks de cartes jouées par chacun des joueurs à chacun des tournois officiels. 
+
+***Visualisation*** 
+
+
+```{r, fig.width=10}
+
+usage_cards <- tournaments %>%
+  filter(type_card == "Pokémon") %>%
+  select(id_card, energy_type_card, amount_card) %>%
+  group_by(id_card) %>%
+  summarise(
+    usage = sum(amount_card), 
+    energy_type_card = first(energy_type_card),
+    .groups = "drop") %>%
+  arrange(desc(usage)) %>% 
+  left_join(select(tournaments, id_card, name_card), join_by(id_card)) %>%
+  unique() %>%
+  top_n(10, usage) %>%
+  mutate(set_code = str_extract(id_card, "^[A-Za-z]+"),
+         number = str_extract(id_card, "[0-9]+")) %>%
+  mutate(number = str_remove(number, "^0+"))
+
+library(httr)
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+response <- GET("https://api.pokemontcg.io/v2/sets")
+sets_data <- fromJSON(content(response, as = "text"))$data
+
+sets_df <- sets_data %>%
+  select(id, name, ptcgoCode) %>%
+  rename(api_set_id = id, set_name = name)
+
+card_images = read.csv("data/pokemon-cards.csv") %>% tibble() %>%
+  separate(id, into = c("set_id", "number"), sep = "-", remove = FALSE)
+# Manually adjust a set name to match
+card_images$set_id <- replace(card_images$set_id, card_images$set_id == 'swshp', 'sv8') 
+
+card_images <- card_images %>%
+  left_join(sets_df, by = c("set_id" = "api_set_id")) %>%
+  mutate(number = str_extract(number, "\\d+")) %>%
+  mutate(number = str_remove(number, "^0+"))
+
+usage_cards <- usage_cards %>%
+  left_join(card_images, by = c("set_code" = "ptcgoCode", "number" = "number")) %>%
+  select(usage, name_card, image_url, energy_type_card)
+
+usage_cards$energy_type_card[usage_cards$energy_type_card == "Colorless"] <- "Normal"
+usage_cards$energy_type_card[usage_cards$energy_type_card == "Darkness"] <- "Dark"
+
+# Draw graph
+usage_cards %>%
+  ggplot(aes(x = reorder(name_card, -usage), 
+             y = usage, 
+             fill = energy_type_card)) +
+  # Colored bars
+  geom_col(width = .9) +
+  scale_fill_manual(values = type_colors) +
+
+  geom_image(aes(image=image_url, y = usage + 700), size=.17) +
+  
+  ylim(0, 4400) +
+  
+  labs(
+    title = "Cartes les plus utilisées en tournoi",
+    subtitle = "La couleur correspond au type des Pokémons",
+    y = "Nombre de cartes utilisées"
+    ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1), 
+    axis.title.x = element_blank(),
+    legend.position = "None",
+    plot.margin = margin(5, 5, 5, 5)
+  )
+
+```
+
+***Analyse :***  
+
+Tout d'abord, on voit que beaucoup des Pokémons les plus utilisés possèdent un talent, c'est-à-dire une capacité spéciale. Cela n'est pas surprenant, puisque ces capacités constituent un avantage stratégique en duel.
+Cela explique que **Comfey** et **Archeops** soient les Pokémons les plus utilisés, puisqu'ils disposent d'un talent pouvant être utile avec n'importe quel deck, peu importe le type.
+On voit également qu'une proportion conséquente des cartes les plus utilisées sont des Pokémons de type **Normal**. Leur type leur permettant d'être utilisé en combinaison avec n'importe quel autre type, cela explique qu'ils soient joués dans beaucoup de decks différents.
+
+
 
 
 
