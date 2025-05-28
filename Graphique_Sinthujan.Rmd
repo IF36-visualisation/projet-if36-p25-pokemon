@@ -214,5 +214,12 @@ ggplot(pokemon_long, aes(x = fct_reorder(Name, Year, .fun = min), y = Sales, fil
 
 ```
 
+***Analyse :***
+
+On remarque que la répartition des ventes par région est relativement similaire d’un jeu à l’autre.**L'Europe** représente en général **entre 25 et 30 %** des ventes. **L'Amérique du Nord**, quant à elle, représente  **entre 35 et 41 %** des ventes, tandis que le pays créateur, le Japon, se situe **entre 30 et 38 %**.
+Au vu de ces proportions, on peut conclure que l'Amérique du Nord représente la plus grande part des ventes, suivie du Japon, puis de l'Europe. Cependant, voir l’Europe en troisième position peut surprendre, car elle est démographiquement plus importante que le Japon et l’Amérique du Nord. Cela pourrait s’expliquer par une culture vidéoludique différente, une moindre popularité de Pokémon à certaines époques, ou des efforts marketing moindres sur le continent européen. Enfin, il est logique que le Japon conserve une part importante des ventes, représentant systématiquement environ un tiers, compte tenu de la forte culture autour de Pokémon et de l’impact de la franchise dans son pays d’origine.
+
+On observe tout de même certaines exceptions. Pour les jeux **Pokémon Noir & Blanc**, **l'Europe** affiche ses pires score avec **21 et 22 %**, au profit du **Japon**, qui atteint ses meilleurs scores avec **37 et 38 %**.
+
 
 
