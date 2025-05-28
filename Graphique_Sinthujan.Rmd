@@ -480,3 +480,16 @@ print(message)
 print(resultats)
 
 ```
+
+***Analyse :***
+
+On observe globalement que les decks les plus chers des tournois **(top 20 en termes de prix)** sont associés aux meilleures performances.
+Par exemple, pour les decks les plus onéreux **(rang = 1)**, **50 %** des joueurs terminent dans le **top 20**, et **près de 25 %** atteignent le **top 10** du tournoi.
+À l’inverse, pour les decks classés au **rang 60**, **75 %** des joueurs terminent **en dehors du top 30.**
+Cependant, ce graphique ne permet pas d’identifier clairement une relation linéaire entre la performance en tournoi et le rang du deck en termes de prix.
+
+**Le second graphique, qui présente le prix total des decks selon leur rang**, montre que le prix des decks décroît principalement pour **les 30 premiers rangs**. Au-delà, les prix restent relativement similaires. Cette faible variation peut expliquer l’absence de corrélation linéaire dans le premier graphique.
+
+En conclusion, on peut avancer que les joueurs souhaitant viser les meilleures places doivent investir significativement plus que leurs adversaires.
+À l’inverse, ceux qui utilisent des decks au prix moyen peuvent espérer atteindre des positions intermédiaires, généralement **en dehors du top 40.**
+
