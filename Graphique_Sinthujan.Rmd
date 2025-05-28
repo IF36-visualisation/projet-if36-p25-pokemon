@@ -1,33 +1,35 @@
 ---
 title: "Graphique_Sinthujan"
 author: "Sinthujan ARULRAJ"
-date: "2025-04-21"
+date: "2025-05-18"
 output:
   html_document: default
   pdf_document: default
 ---
 
 
-# 1. Visualisation de la popularité des jeux vidéos Pokémon à l'aide du nombre de ventes de 1996 à 2014 
-
+## 1. Visualisation de la popularité des jeux vidéos Pokémon à l'aide du nombre de ventes de 1996 à 2014  
+  
+  
 ***Objectif du graphique :***  
+
 Ici, nous allons répondre aux questions suivantes : **À quel point les jeux vidéos Pokémon sont-ils populaires ? Les jeux récents sont-ils plus populaires que les anciens ?**
 Les jeux vidéos Pokémon existent depuis très longtemps et de nouveaux jeux ne cessent de sortir.
 À l'aide de ce graphique, le but est d'observer si les jeux vidéos Pokémon occupent une place importante sur le marché des jeux vidéos et de voir comment évolue cette place au cours du temps.
-Nous avons créée un barchart permettant de comparer chaque jeu vidéo Pokémon avec le jeu le plus vendu de la même année.
+Nous avons créé un barchart permettant de comparer chaque jeu vidéo Pokémon avec le jeu le plus vendu de la même année.
 
 ***Présentation :***  
-Pour réaliser ce graphique, nous avons utilisé les données du dataset "vgsales.csv".
+
+Pour réaliser ce graphique, nous avons utilisé les données du dataset **"vgsales.csv"**.
 Nous avons conservé uniquement les jeux Pokémon qui ont des ventes globales supérieures à 6 millions afin de conserver uniquement les jeux principaux de Pokémon et éliminer tous les spin-off.
 Nous avons ensuite comparer à l'aide d'un barchart le nombre de ventes des jeux Pokémon avec le jeu vidéo le plus vendu de la même année. On peut voir également la position du jeu Pokémon parmi les ventes globales de l'année.
 
-***Code et Visualisation*** 
-```{r warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Charger les bibliothèques
 library(tidyverse)
 
 # Charger le dataset
-df <- read_csv("data/vgsales.csv")
+df <- read_csv("vgsales.csv")
 
 # 1. Filtrer les jeux Pokémon avec plus de 6 millions de ventes
 pokemon_games <- df %>%
@@ -129,13 +131,21 @@ ggplot(plot_data, aes(x = factor(Year), y = Sales, fill = Color)) +
 
 ***Analyse :***
 
-On peut observer que les jeux Pokémon récents se vendent globalement moins bien que les précédents. On peut remarquer cela car les 2 jeux Pokémon les plus vendus de l'histoire sont sortis en **1996 et 1999** avec respectivement **plus de 30 et 20 millions** de ventes, tandis que les plus récents peine à atteindre les **20 millions** de ventes. 
+On peut observer que les jeux Pokémon récents se vendent globalement moins bien que les anciens. On peut remarquer cela car les 2 jeux Pokémon les plus vendus de l'histoire sont sortis en **1996 et 1999** avec respectivement **plus de 30 et 20 millions** de ventes, tandis que les plus récents peine à atteindre les **20 millions** de ventes. 
 
 Cependant à l'aide des rangs des jeux Pokémon parmi les ventes globales de chaque année, on peut voir qu'à chaque sortie d'un nouveau jeu Pokémon, ce dernier figure presque toujours parmi le **TOP 5** des ventes de l'année. Récemment, il est rare de voir des jeux Pokémon en première position comme on avait pu le voir en **1996 et 1999**. 
 Mais on peut conclure que les jeux Pokémon occupe toujours une place très importante sur le marché du jeu vidéo.
-On peut expliquer cette baisse des ventes par une grosse concurrence et un manque de nouveauté dans le contenu.
-
- 
+On peut expliquer cette baisse des ventes par le fait qu'il y'a de plus en plus de concurrence et un manque de nouveauté dans le contenu.
 
 
+
+## 2. Visualisation de la répartition régionale des ventes des jeux Pokémon de 1996 à 2014 
+
+
+***Objectif du graphique :***  
+
+Nous cherchons ici à répondre aux questions suivantes : **Comment les ventes des jeux Pokémon se répartissent au sein des régions ? Est-ce que cette répartition est différente selon le jeu et l'année ?**
+Les jeux vidéos Pokémon ont été développés par des studios Japonais, et pourtant le succès des jeux est visible dans le monde eniter.
+À l'aide de ce graphique, le but est de comparer les proportions des ventes entre chaque région pour comprendre la popularité du jeu dans la région.
+Nous avons créé un barchart permettant de comparer les proportions des ventes entre chaque région pour chaque jeu.
 
