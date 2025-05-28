@@ -232,3 +232,10 @@ Des tournois de cartes Pokémon sont organisés dans le monde entier. Dans chaqu
 Grâce à ce graphique, nous cherchons par exemple à savoir si un joueur ayant le deck le plus cher termine régulièrement dans le top 10 de la compétition.
 Nous avons créé un **boxplot** permettant de visualiser la médiane, les premier et troisième quartiles, ainsi que les valeurs aberrantes (outliers) pour chaque rang. Nous y avons également ajouté des courbes de tendance pour la médiane et la moyenne (hors outliers) en fonction du classement final.
 Un second **boxplot** a été réalisé pour présenter les statistiques de base concernant le prix des decks selon leur rang.
+
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé les données du dataset **"tournaments.csv"**.
+Nous avons conservé uniquement les tournois comptant **au moins 10 participants**.
+Le prix du deck de chaque joueur a été calculé, puis nous avons déterminé le rang de chaque deck en termes de prix dans chaque tournoi. Ensuite, nous avons associé à chaque deck le classement final obtenu par le joueur. 
+Enfin, nous avons pu créer un boxplot représentant le classement final du joueur en fonction du rang de son deck en termes de prix dans le tournoi.
