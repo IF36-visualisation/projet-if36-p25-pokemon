@@ -149,3 +149,9 @@ Les jeux vidéos Pokémon ont été développés par des studios Japonais, et po
 À l'aide de ce graphique, le but est de comparer les proportions des ventes entre chaque région pour comprendre la popularité du jeu dans la région.
 Nous avons créé un barchart permettant de comparer les proportions des ventes entre chaque région pour chaque jeu.
 
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé les données du dataset **"vgsales.csv"**.
+Nous avons conservé uniquement les jeux Pokémon qui ont des ventes globales supérieures à 6 millions afin de conserver uniquement les jeux principaux de Pokémon et éliminer tous les spin-off.
+
+
