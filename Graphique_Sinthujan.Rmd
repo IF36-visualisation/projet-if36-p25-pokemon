@@ -154,4 +154,65 @@ Nous avons créé un barchart permettant de comparer les proportions des ventes 
 Pour réaliser ce graphique, nous avons utilisé les données du dataset **"vgsales.csv"**.
 Nous avons conservé uniquement les jeux Pokémon qui ont des ventes globales supérieures à 6 millions afin de conserver uniquement les jeux principaux de Pokémon et éliminer tous les spin-off.
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+
+# Charger les données
+df <- read_csv("vgsales.csv")
+
+# 1. Filtrer les jeux Pokémon avec plus de 6 millions de ventes
+pokemon_games <- df %>%
+  filter(str_detect(Name, "(?i)pokemon") & Global_Sales > 6) %>%
+  drop_na(Year, Global_Sales) %>%
+  filter(is.finite(Global_Sales))
+
+# 2. Nettoyer les noms de jeux : enlever "Pokémon" et ajouter l'année
+pokemon_games <- pokemon_games %>%
+  mutate(Name = gsub("(?i)pokemon", "", Name, ignore.case = TRUE),
+         Name = paste(Name, " (", Year, ")", sep = "")) 
+
+# 3. Réorganiser les données et garder l'année
+pokemon_long <- pokemon_games %>%
+  select(Name, Year, NA_Sales, EU_Sales, JP_Sales, Other_Sales) %>%  # Garder l'année
+  pivot_longer(cols = c(NA_Sales, EU_Sales, JP_Sales, Other_Sales),
+               names_to = "Region",
+               values_to = "Sales")
+
+# 4. Ajouter les proportions pour les étiquettes
+pokemon_long <- pokemon_long %>%
+  group_by(Name) %>%
+  mutate(Prop = Sales / sum(Sales)) %>%
+  ungroup() %>%
+  mutate(Label = scales::percent(Prop, accuracy = 1))  # format "25%"
+
+# 5. Tracer le graphique avec les labels, ordonné par année de sortie
+ggplot(pokemon_long, aes(x = fct_reorder(Name, Year, .fun = min), y = Sales, fill = Region)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = Label), 
+            position = position_fill(vjust = 0.5), 
+            color = "white", size = 3) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Répartition régionale des ventes des jeux Pokémon \nde 1996 à 2014 (>6M ventes)",
+    x = "Jeu Pokémon",
+    y = "Proportion des ventes (%)",
+    fill = "Région"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+    axis.text.y = element_text(face = "bold"),
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    plot.title = element_text(face = "bold"),
+    legend.title = element_text(face = "bold"),
+    legend.text = element_text(face = "bold"),
+    axis.ticks = element_line(color = "black", size = 0.7),
+    axis.line = element_line(color = "black", size = 0.7),
+    plot.margin = margin(t = 30, r = 10, b = 10, l = 10)
+  )
+
+```
+
+
 
