@@ -239,3 +239,244 @@ Pour réaliser ce graphique, nous avons utilisé les données du dataset **"tour
 Nous avons conservé uniquement les tournois comptant **au moins 10 participants**.
 Le prix du deck de chaque joueur a été calculé, puis nous avons déterminé le rang de chaque deck en termes de prix dans chaque tournoi. Ensuite, nous avons associé à chaque deck le classement final obtenu par le joueur. 
 Enfin, nous avons pu créer un boxplot représentant le classement final du joueur en fonction du rang de son deck en termes de prix dans le tournoi.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+# Chargement des librairies
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+# Lecture du dataset
+df <- read_csv("tournaments.csv")
+
+# Nombre de participants par tournoi
+participants_par_tournoi <- df %>%
+  distinct(id_tournament, id_player) %>%  # Un joueur unique par tournoi
+  count(id_tournament, name = "nb_participants")
+
+# On garde uniquement les tournois avec au moins 10 participants
+tournois_valide <- participants_par_tournoi %>%
+  filter(nb_participants >= 10)
+
+# On filtre le dataset principal
+df <- df %>%
+  semi_join(tournois_valide, by = "id_tournament")
+
+nb_decks <- 70
+
+# Conversion manuelle des colonnes en numériques
+df <- df %>%
+  mutate(
+    amount_card = as.numeric(amount_card),
+    price_card = as.numeric(price_card),
+    ranking_player_tournament = as.numeric(ranking_player_tournament)
+  )
+
+# Calcul du prix total du deck (prix unitaire * quantité)
+df <- df %>%
+  mutate(total_card_price = amount_card * price_card)
+
+# Prix total du deck par joueur et tournoi
+deck_price <- df %>%
+  group_by(id_player, id_tournament) %>%
+  summarise(total_deck_price = sum(total_card_price, na.rm = TRUE), .groups = "drop")
+
+# Récupération du classement du joueur dans le tournoi
+ranking_info <- df %>%
+  select(id_player, id_tournament, ranking_player_tournament) %>%
+  distinct()
+
+# Fusion des données
+merged_df <- left_join(deck_price, ranking_info, by = c("id_player", "id_tournament"))
+
+# Calcul du rang du prix du deck par tournoi
+merged_df <- merged_df %>%
+  group_by(id_tournament) %>%
+  mutate(rank_price_deck = rank(-total_deck_price, ties.method = "min")) %>%  # Le plus cher = rang 1
+  ungroup()
+
+# Filtrer pour ne garder que les nb_decks decks les plus chers par tournoi
+top10_df <- merged_df %>%
+  filter( rank_price_deck <= nb_decks )
+
+# Calcul des médianes pour la courbe de tendance
+median_df <- top10_df %>%
+  group_by(rank_price_deck) %>%
+  summarise(median_rank = median(ranking_player_tournament), .groups = "drop")
+
+# Courbe de référence y = x
+diag_df <- data.frame(
+  rank_price_deck = factor(1:nb_decks, levels = as.character(1:nb_decks)),
+  ranking_player_tournament = 1:nb_decks
+)
+
+mean_no_outliers_df <- top10_df %>%
+  group_by(rank_price_deck) %>%
+  summarise(
+    Q1 = quantile(ranking_player_tournament, 0.25),
+    Q3 = quantile(ranking_player_tournament, 0.75),
+    IQR = Q3 - Q1,
+    mean_no_outliers = mean(ranking_player_tournament[ranking_player_tournament >= (Q1 - 1.5*IQR) & ranking_player_tournament <= (Q3 + 1.5*IQR)]),
+    .groups = "drop"
+  )
+
+# Conversion de rank_price_deck en numérique pour la régression
+median_df_1 <- median_df %>%
+  mutate(rank_price_deck_num = as.numeric(as.character(rank_price_deck)))
+
+mean_no_outliers_df_1 <- mean_no_outliers_df %>%
+  mutate(rank_price_deck_num = as.numeric(as.character(rank_price_deck)))
+
+# LOESS pour la médiane
+loess_median <- loess(median_rank ~ rank_price_deck_num, data = median_df_1)
+# Prédictions
+preds_median <- predict(loess_median)
+# R² "manuel"
+ss_res <- sum((median_df$median_rank - preds_median)^2)
+ss_tot <- sum((median_df$median_rank - mean(median_df_1$median_rank))^2)
+r2_loess_median <- 1 - (ss_res / ss_tot)
+# LOESS pour la moyenne
+loess_mean <- loess(mean_no_outliers ~ rank_price_deck_num, data = mean_no_outliers_df_1)
+# Prédictions
+preds_mean <- predict(loess_mean)
+ss_res_mean <- sum((mean_no_outliers_df$mean_no_outliers - preds_mean)^2)
+ss_tot_mean <- sum((mean_no_outliers_df$mean_no_outliers - mean(mean_no_outliers_df_1$mean_no_outliers))^2)
+r2_loess_mean <- 1 - (ss_res_mean / ss_tot_mean)
+
+
+
+# Graphique complet
+ggplot(top10_df, aes(x = as.factor(rank_price_deck), y = ranking_player_tournament, fill = as.numeric(rank_price_deck))) +
+  geom_boxplot(color = "black", outlier.size = 0.8, alpha = 0.9) +
+  
+  #geom_line(data = mean_no_outliers_df,
+  #aes(x = rank_price_deck, y = mean_no_outliers, group = 1),
+  #color = "darkorange", size = 1.2) +
+  
+  geom_line(data = diag_df,
+            aes(x = rank_price_deck, y = ranking_player_tournament, group = 1,
+                color = "Référence y = x"), linetype = "solid", size = 1.5) +
+  
+  geom_smooth(data = median_df,
+              aes(x = rank_price_deck, y = median_rank, group = 1, color = "Médiane"),
+              method = "loess", size = 1.5, se = FALSE, show.legend = TRUE) +
+  
+  geom_smooth(data = mean_no_outliers_df,
+              aes(x = rank_price_deck, y = mean_no_outliers, group = 1, color = "Moyenne sans outliers"),
+              method = "loess", size = 1.5, se = FALSE, show.legend = TRUE) +
+  
+  scale_fill_gradient(
+    name = "Rang du deck",
+    low = "navy", 
+    high = "turquoise"
+  ) +
+  scale_color_manual(
+    name = "Courbes",
+    values = c("Médiane" = "purple3", "Moyenne sans outliers" = "chartreuse3", "Référence y = x" = "firebrick")
+  ) +
+  scale_y_reverse(breaks = c(1, seq(10, max(top10_df$ranking_player_tournament, na.rm = TRUE), by = 10)))+
+  labs(
+    title = paste0("Distribution du classement des joueurs pour les\n ", nb_decks, " decks les plus chers (par tournoi)"),
+    subtitle = paste0("R² Médiane = ", round(r2_loess_median, 3), " | R² Moyenne sans outliers = ", round(r2_loess_mean, 3)),
+    x = "Rang du deck en terme de prix (1 = le plus cher)",
+    y = "Classement du joueur",
+    fill = "Rang du deck"
+  ) +
+  scale_x_discrete(breaks = as.character(c(1, seq(10, nb_decks, by = 10))))+
+  theme_light(base_size = 13) + 
+  theme(legend.position = "right",
+        # Textes en gras
+        plot.title = element_text(face = "bold"),
+        plot.subtitle = element_text(face = "bold"),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(face = "bold"),
+        axis.text.x = element_text(face = "bold"),
+        axis.text.y = element_text(face = "bold"),
+        legend.title = element_text(face = "bold"),
+        legend.text = element_text(face = "bold"),
+        axis.ticks = element_line(color = "black", size = 0.7),
+        axis.line = element_line(color = "black", size = 0.7),
+        plot.margin = margin(t = 30, r = 10, b = 10, l = 10)
+  )
+
+# Calcul de la moyenne du prix des decks par rang
+mean_price_df <- top10_df %>%
+  group_by(rank_price_deck) %>%
+  summarise(mean_price = mean(total_deck_price, na.rm = TRUE), .groups = "drop")
+
+
+
+# Graphique avec la courbe de moyenne
+ggplot(top10_df, aes(x = as.factor(rank_price_deck), y = total_deck_price, fill = as.numeric(rank_price_deck))) +
+  geom_boxplot(color = "black", outlier.size = 0.8, alpha = 0.9) +
+  
+  # Courbe de moyenne
+  geom_line(data = mean_price_df,
+            aes(x = as.factor(rank_price_deck), y = mean_price, group = 1, color = "Moyenne"),
+            size = 1.5) +
+  
+  scale_fill_gradient(
+    name = "Rang du deck",
+    low = "navy", 
+    high = "turquoise"
+  ) +
+  scale_color_manual(
+    name = "Courbes",
+    values = c("Moyenne" = "darkorange")
+  ) +
+  
+  labs(
+    title = paste0("Distribution des prix des decks pour les\n ", nb_decks, " decks les plus chers (par tournoi)"),
+    x = "Rang du deck en terme de prix (1 = le plus cher)",
+    y = "Prix total du deck en $",
+    fill = "Rang du deck"
+  ) +
+  scale_x_discrete(breaks = as.character(c(1, seq(10, nb_decks, by = 10)))) +
+  theme_light(base_size = 13) + 
+  theme(legend.position = "right",
+        plot.title = element_text(face = "bold"),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(face = "bold"),
+        axis.text.x = element_text(face = "bold"),
+        axis.text.y = element_text(face = "bold"),
+        legend.title = element_text(face = "bold"),
+        legend.text = element_text(face = "bold"),
+        axis.ticks = element_line(color = "black", size = 0.7),
+        axis.line = element_line(color = "black", size = 0.7),
+        plot.margin = margin(t = 30, r = 10, b = 10, l = 10)
+  )
+
+# Génère la séquence de valeurs de nb_decks à tester
+deck_values <- seq(10, 140, by = 10)
+
+# Initialise une liste vide pour stocker les résultats
+resultats <- data.frame(nb_participants = integer(),
+                        nb_tournois = integer(),
+                        total_tournois = integer(),
+                        pourcentage = numeric())
+
+# Boucle sur chaque valeur de nb_decks
+for (x in deck_values) {
+  stats_x <- participants_par_tournoi %>%
+    summarise(
+      total_tournois = n(),
+      nb_tournois = sum(nb_participants >= x),
+      pourcentage = (nb_tournois / total_tournois) * 100
+    )
+  
+  # Ajoute la ligne au dataframe
+  resultats <- rbind(resultats, data.frame(
+    nb_participants = x,
+    nb_tournois = stats_x$nb_tournois,
+    total_tournois = stats_x$total_tournois,
+    pourcentage = round(stats_x$pourcentage, 2)
+  ))
+}
+
+# Affiche le tableau final
+message <- paste("Voici des statistiques, le pourcentage de tournois avec au moins nb_participants : ")
+print(message)
+print(resultats)
+
+```
