@@ -1,0 +1,1199 @@
+---
+title: "Rapport Projet"
+output: 
+  prettydoc::html_pretty:
+    theme: architect
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, results = 'hide', warning = FALSE)
+```
+
+
+# I. Introduction
+
+Ce projet, réalisé dans le cadre d'IF36, a pour objectif d'analyser plusieurs sources de données afin d'extraire des informations et des visualisations pertinentes autour de la licence **Pokémon**.  
+Au travers de différents graphiques, nous allons répondre à des questionnements portant à la fois sur :
+
+- Les jeux vidéos **Pokémons**
+- Le jeu de cartes à collectionner **Pokémon**
+- Les **Pokémons** en général (statistiques, popularité, ...)
+
+## Sources de données
+
+Pour produire l'ensemble des visualisations présentes dans ce document, nous avons utilisé les jeux de données suivants : 
+
+### 1. The complete pokemon dataset ([dispo. ici](https://www.kaggle.com/datasets/mihirbindal/the-complete-pokemon-dataset))
+Ce dataset sera notre jeu de données principal. En effet, ce jeu de données contient les **noms**, **le numéro du Pokédex**, leur 
+**génération**, leurs **capacités**, des statistiques physiques comme la **taille** et le **poids**, leur **type**, leur **multiplicateur de défense contre chaque type**, etc. Ces données incluent non seulement les 890 Pokémon, mais aussi **leurs méga-évolutions**, leurs **formes de Galar**, **d'Alola** ainsi que leurs **formes alternatives**. Les données proviennent de deux sites communautaires : [pokemondb](https://pokemondb.net/) et [buldapedia](https://bulbapedia.bulbagarden.net/wiki/Main_Page)
+
+
+### 2. Pokemon TCG All Cards 1999 - 2023 ([dispo. ici](https://www.kaggle.com/datasets/adampq/pokemon-tcg-all-cards-1999-2023?select=pokemon-tcg-data-master+1999-2023.csv))
+Ce dataset est un jeu de données agrégé compilant des informations complètes sur les sets et cartes du jeu de cartes à collectionner Pokémon (TCG) de 1999 à 2023, provenant de l'API Pokémon TCG. Ce jeu de données offre une vue d'ensemble détaillée des cartes Pokémon TCG, incluant leurs attributs, capacités, attaques et autres informations pertinentes. Il constitue une ressource précieuse relier chaque pokémon et ses statistiques dans le jeu vidéo, à ses équivalents dans le jeu de carte physique.
+
+
+### 3. Pokémon Trading Cards ([dispo. ici](https://www.kaggle.com/datasets/jacklacey/pokemon-trading-cards))
+Ce dataset pourra être utilisé en complément du précédent. Il permet de relier les cartes du jeu à leur prix de vente. Il contient des données détaillant les cartes Pokémon en vente sur chaoscards.co.uk. 
+
+
+### 4. Limitless PTCGP All Data ([dispo. ici](https://www.kaggle.com/datasets/updatethisplz/limitless-ptcgp-all-data))
+Ce dataset est similaire au numéro 2, mais se porte sur les cartes virtuelles (du jeu mobile sorti en 2024). Ainsi, il contient des informations sur les cartes des pokémons du jeu TCG Pocket.
+
+
+### 5. Sondage de popularité ([dispo. ici](https://pastebin.com/LvhaTx7w))
+Ce dataset est le seul que nous avons trouvé pour obtenir des informations sur la popularité des pokémons. Il provient d'un sondage fait sur un forum de fans de la license (**52 725** votants).
+Les données sont également disponibles [ici](https://docs.google.com/spreadsheets/d/1c16Wh4AawHGbTi3Eq1DGZQdM4FMUlJO1YwXJZ_ylRvg/edit?gid=557303698#gid=557303698), où elles sont un peu analysées
+
+
+### 6. Pokemon TCG - All Tournaments Decks (2011-2023) ([dispo. ici](https://www.kaggle.com/datasets/enriccogemha/pokemon-tcg-all-tournaments-decks-2011-2023))
+Ce dataset contient lui aussi des données sur les cartes physiques, mais se concentre sur leur utilisation en tounoi. Ainsi, on peut savoir quelles cartes sont les plus jouées, et dans quels combos (= combinées avec quelles autres cartes) celles-ci sont jouées.
+
+
+### 7. Pokemon Image Dataset ([dispo. ici](https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types))
+Ce dataset contient des photos de pokémon. 
+
+
+### 8. Video Game Sales ([dispo. ici](https://www.kaggle.com/datasets/gregorut/videogamesales))
+Ce dataset contient une liste des jeux vidéos vendus à plus de 100 000 copies. Il peut nous permettre de lier les ventes des jeux vidéos pokémons, à par exemple, la popularité de certains pokémons.
+
+
+# II. Graphiques
+
+## X. Visualisation des différents combos de types de Pokémon 
+
+***Objectif du graphique :***  
+Ici, nous allons répondre à la question suivante : **Quel est le nombre de Pokémon par combinaison de types ?**
+En effet, les pokémons possèdent un type principal (type1) et un type secondaire (type2). Le but est de voir ici, si ces types sont équitablements répartis, où si on peut observer des tendances.
+Nous allons donc créer une heatmap permettant de visualiser les combinaisons de types de Pokémon.
+
+***Présentation :***  
+Pour réaliser ce graphique, nous avons utilisé les données du dataset "Pokemon_data".
+Nous avons filtré les Pokémon qui n'ont pas de type secondaire (type2 = "None").
+Nous avons ensuite compté le nombre de Pokémon par combinaison de types, puis nous avons ajouté des totaux pour chaque type principal et secondaire.
+
+***Visualisation :***  
+```{r warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+#Ouverture du dataset
+df <- read.csv("data/Pokemon_data.csv", sep = ",")
+
+#On ne garde que les colonnes nécessaires : name, type1 et type2
+df <- df %>%
+  select(name, type1, type2) %>%
+  mutate(type1 = as.character(type1), type2 = as.character(type2))
+
+# Comptage
+df_filtered <- df %>%
+  filter(type2 != "None") %>%
+  count(type1, type2)
+
+# Totaux
+row_totals <- df_filtered %>%
+  group_by(type1) %>%
+  summarise(n = sum(n)) %>%
+  mutate(type2 = "Total")
+
+col_totals <- df_filtered %>%
+  group_by(type2) %>%
+  summarise(n = sum(n)) %>%
+  mutate(type1 = "Total")
+
+# Fusion
+df_augmented <- bind_rows(df_filtered, row_totals, col_totals)
+
+# Marquage des cellules de total
+df_augmented <- df_augmented %>%
+  mutate(
+    is_total = type1 == "Total" | type2 == "Total",
+    fill_value = ifelse(is_total, NA, n),
+    text_color = ifelse(is_total, "black", "gray10"),
+    border_color = ifelse(is_total, "black", "white")
+  )
+
+# Forcer l'ordre pour mettre "Total" à droite / en haut
+type1_levels <- c(sort(unique(df_augmented$type1[df_augmented$type1 != "Total"])), "Total")
+type2_levels <- c(sort(unique(df_augmented$type2[df_augmented$type2 != "Total"])), "Total")
+
+df_augmented <- df_augmented %>%
+  mutate(
+    type1 = factor(type1, levels = type1_levels),
+    type2 = factor(type2, levels = type2_levels)
+  )
+
+# Heatmap finale
+ggplot(df_augmented, aes(x = type2, y = type1)) +
+  geom_tile(aes(fill = fill_value), color = df_augmented$border_color, size = 1) +
+  geom_text(aes(label = n, color = text_color), show.legend = FALSE) +
+  scale_fill_gradient(low = "#ffeda0", high = "#f03b20", na.value = "white") +
+  scale_color_identity() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 35, hjust = 1)) +
+  labs(
+    title = "Heatmap des Combinaisons de Types 1 / Types 2 des Pokémons avec un Type Secondaire",
+    subtitle = "Nombre de Pokémons par combinaison de types",
+    x = "Type Secondaire",
+    y = "Type Principal"
+  ) +
+  coord_fixed()
+```
+
+***Analyse :***  
+Nous pouvons observer que la majorité des Pokémon possèdent un type principal de type "Eau" (Water) et un type secondaire de type "Vol" (Flying).
+Nous pouvons également observer que les Pokémon de type "Normal" (Normal) possèdent le plus fréquemment un type secondaire de type "Vol" (Flying) et que les Pokémon de type "Plante" (Grass) possèdent souvent un type secondaire de type "Poison" (Poison).**Ce sont les combos les plus fréquents**.
+On peut également remarquer que de nombreux combos n'existent pas, comme par exemple "Poison" (Poison) et "Acier" (Steel), ou encore "Fée" (Fairy) et "Combat" (Fighting). Cela peut sembler logique pour certaines combinaisons (par exemple "Feu" (Fire) et "Eau" (Water)), mais il est intéressant de le noter.
+Malgré tout, on peut remarquer que la plupart des combinaisons sont représentées par la même echelle de couleur, ce qui signifie qu'il n'y a pas de combo de type qui se démarque vraiment des autres (hormis ceux notés au début).  
+
+
+## X. Efficacité  d'un type de Pokémon face à un autre type de Pokémon
+***Objectif du graphique :***  
+Ici, nous allons répondre à la question suivante : **Face à quel type adverse chaque type d'attaque est-il meilleur ?**
+En effet, chaque pokémon possède un coefficient de dégats subits pour chaque type adverse. Par exemple, si un pokémon a un coéfficent de 2 pour le type Feu, il recevra 2 fois plus de dégats par attaque de type Feu.
+Le but est de voir ici, si ces coefficients sont équitablement répartis, où si on peut observer des tendances en fonction du type principal du pokémon.
+
+***Présentation :***  
+Pour réaliser ce graphique, nous avons utilisé les données du dataset "Pokemon_data".
+Nous avons conservé les colonnes "name", "type1" et les coefficients de dégats subits pour chaque type adverse.
+Nous avons ensuite calculé la moyenne des coefficients de dégats subits pour chaque type adverse, puis nous avons créé une heatmap pour visualiser ces moyennes.
+
+
+***Visualisation :***  
+```{r warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+#Ouverture du dataset
+df <- read.csv("data/Pokemon_data.csv", sep = ",")
+
+#On ne garde que les colonnes nécessaires
+df <- df %>%
+  select(name, type1, against_bug, against_dark, against_dragon,
+         against_electric, against_fairy, against_fighting, against_fire,
+         against_flying, against_ghost, against_grass, against_ground,
+         against_ice, against_normal, against_poison, against_psychic,
+         against_rock, against_steel, against_water)
+
+#On calcule la moyenne des coefficients "against" par type
+mean_against_by_type <- df %>%
+  group_by(type1) %>%
+  summarise(
+    mean_against_bug = mean(against_bug, na.rm = TRUE),
+    mean_against_dark = mean(against_dark, na.rm = TRUE),
+    mean_against_dragon = mean(against_dragon, na.rm = TRUE),
+    mean_against_electric = mean(against_electric, na.rm = TRUE),
+    mean_against_fairy = mean(against_fairy, na.rm = TRUE),
+    mean_against_fighting = mean(against_fighting, na.rm = TRUE),
+    mean_against_fire = mean(against_fire, na.rm = TRUE),
+    mean_against_flying = mean(against_flying, na.rm = TRUE),
+    mean_against_ghost = mean(against_ghost, na.rm = TRUE),
+    mean_against_grass = mean(against_grass, na.rm = TRUE),
+    mean_against_ground = mean(against_ground, na.rm = TRUE),
+    mean_against_ice = mean(against_ice, na.rm = TRUE),
+    mean_against_normal = mean(against_normal, na.rm = TRUE),
+    mean_against_poison = mean(against_poison, na.rm = TRUE),
+    mean_against_psychic = mean(against_psychic, na.rm = TRUE),
+    mean_against_rock = mean(against_rock, na.rm = TRUE),
+    mean_against_steel = mean(against_steel, na.rm = TRUE),
+    mean_against_water = mean(against_water, na.rm = TRUE)
+  )
+
+# Transformation des données pour la heatmap
+heatmap_data <- mean_against_by_type %>%
+  pivot_longer(
+    cols = starts_with("mean_against"),
+    names_to = "against_type",
+    values_to = "mean_value"
+  ) %>%
+  mutate(against_type = gsub("mean_against_", "", against_type))
+
+# Création de la heatmap
+ggplot(heatmap_data, aes(x = type1, y = against_type, fill = mean_value)) +
+  geom_tile(color = "white") +
+  geom_text(aes(label = round(mean_value, 2)), color = "black", size = 3) + # Ajout des labels
+  scale_fill_gradient2(
+    low = "blue",    # Couleur pour les valeurs basses (proche de 0)
+    mid = "white",   # Couleur neutre pour la valeur 1
+    high = "red",    # Couleur pour les valeurs hautes (proche de 2)
+    midpoint = 1,    # Point central du dégradé
+    name = "Moyenne" # Légende de l'échelle
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(
+    title = "Heatmap des moyennes des coefficients de dégâts infligés par type d'attaque, pour chaque type pricipal du pokémon adverse",
+    x = "Type principal du Pokémon attaqué",
+    y = "Type de l'attaque"
+  )
+```
+
+***Analyse :***  
+Nous pouvons observer grâce à cette heatmap que le types de Pokémon ont une réèlle influence sur les dégats infligés / subits et donc l'issu d'un combat.
+En effet, les dégats reçus sont multipliés par des coefficients qui varient énormément selon le type adverse. Par exemple, un pokémon de type "Feu" (Fire) subira 2 fois plus de dégats face à un Pokémon de type "Eau" (Water), mais seulement 0.5 fois moins de dégats face à un Pokémon de type "Plante" (Grass).
+Nous pouvons également observer que certains types de Pokémon sont plus résistants que d'autres. Par exemple, les Pokémon de type "Acier" (Steel) subissent moins de dégats face à la plupart des types adverses, tandis que les Pokémon de type "Normal" (Normal) subissent plus de dégats face à la plupart des types adverses.
+Ensuite, nous pouvons également observer que certains types de Pokémon sont plus efficaces que d'autres. Par exemple, les Pokémon de type "Dragon" (Dragon) infligent plus de dégats face à la plupart des types adverses, tandis que les Pokémon de type "Fée" (Fairy) infligent moins de dégats face à la plupart des types adverses.
+Enfin, on peut noter que certains types de pokémons sont immunisés face à certains types adverses, comme par exemple les Pokémon de type "Vol" (Flying) face aux attaques de type "Sol" (Ground). Cela peut être très intéressant à prendre en compte lors d'un combat, car cela peut faire la différence entre la victoire et la défaite. 
+
+## X. Popularité des types de Pokémons
+
+***Objectif du graphique :***  
+Ici, nous allons répondre à la question suivante : **Quels sont les types de Pokémon préférés de la communauté ?**
+
+
+***Présentation :***  
+Pour réaliser ce graphique, nous avons combiné deux jeux de données : 
+
+- **The complete Pokemon dataset** : Statistiques complètes des Pokémons des 8 premières générations (notamment le type)
+- **Sondage de popularité** : Sondage réalisé en 2019 sur un forum de la communauté Pokémon recueillant le Pokémon préféré de 52000 votants
+
+Nous considérons ici seulement le premier type de chaque Pokémon (certains Pokémons ont un deuxième type, mais on peut considérer qu'il est moins caractérisant que le premier).  
+On affiche ici, pour chacun des types, le pourcentage de vote reçu par l'ensemble des Pokémons de ce type.  
+Pour mettre en perspective ces résultats, on affiche également la distribution des Pokémons par type. Les Pokémons dessinés sont les plus populaires pour chacun des types.
+
+
+***Visualisation :***  
+```{r warning=FALSE}
+library(tidyverse)
+library(ggimage)
+
+# Load data
+popularity <- tibble(read.table("data/popularity.txt", header = TRUE, sep = ","))
+pok_data <- tibble(read.csv2("data/Pokemon_data.csv", header = TRUE, sep=','))
+
+# Join datasets by Pokemon name
+merged <- popularity %>% left_join(pok_data %>% select(name, type1), by = c("Pokemon" = "name"))
+
+# Create aggregated data by Pokemon type
+type_summary <- merged %>%
+  filter(!is.na(type1)) %>%
+  group_by(type1) %>%
+  summarise(TotalVotes = sum(Number.of.votes), Count = n()) %>%
+  mutate(AvgVotes = TotalVotes / Count) %>%
+  arrange(desc(AvgVotes)) %>%
+  left_join(
+    # Select the most popular Pokemon for each type
+    merged %>%
+    filter(!is.na(type1)) %>%
+    group_by(type1) %>%
+    slice_max(Number.of.votes, n = 1) %>%
+    select(type1, Pokemon, Number.of.votes), 
+    by = "type1"
+  ) %>%
+  mutate(img_path = paste0("data/images/", tolower(Pokemon), ".png"))
+
+# Define colors of each type for graphical purpose
+type_colors <-c(
+	'Normal'= '#A8A77A',
+	'Fire' = '#EE8130',
+	'Water' = '#6390F0',
+	'Electric' = '#F7D02C',
+	'Grass' = '#7AC74C',
+	'Ice' = '#96D9D6',
+	'Fighting' = '#C22E28',
+	'Poison' = '#A33EA1',
+	'Ground' = '#E2BF65',
+	'Flying' = '#A98FF3',
+	'Psychic' = '#F95587',
+	'Bug' = '#A6B91A',
+	'Rock' = '#B6A136',
+	'Ghost' = '#735797',
+	'Dragon' = '#6F35FC',
+	'Dark' = '#705746',
+	'Steel' = '#B7B7CE',
+	'Fairy' = '#D685AD'
+)
+
+# Compute the average number of votes
+avg_votes <- mean(type_summary$TotalVotes) / sum(type_summary$TotalVotes) * 100
+
+# Draw graph
+type_summary %>%
+  ggplot(aes(x = reorder(type1, -TotalVotes), 
+             y = TotalVotes / sum(TotalVotes) * 100, 
+             fill=type1)) +
+  # Colored bars
+  geom_col() +
+  geom_hline(yintercept = avg_votes, linetype = "dashed", color = "red", linewidth = 1, alpha=.5) +
+  
+  # Black bars
+  geom_col(aes(y = Count / sum(Count) * 100, fill = "Nombre de Pokémons"), alpha = 0.3, width = 0.6) +
+  
+  # Fake invisible layer to create "Nombre de Votes" legend
+  geom_col(aes(y = 0, fill = "Nombre de Votes"), show.legend = TRUE) +
+  
+  scale_fill_manual(
+    name = NULL,
+    values = c(type_colors, "Nombre de Pokémons" = "black", "Nombre de Votes" = "#6390F0"),
+    breaks = c("Nombre de Votes", "Nombre de Pokémons")
+  ) +
+  guides(
+    fill = guide_legend(override.aes = list(alpha = c(1, 0.3)))
+  ) +
+  
+  annotate("text", x = 14, y = avg_votes + 1, label = "Popularité moyenne", color = "red", size = 4, hjust = 0) +
+  labs(title = "Popularité des types de Pokemon", subtitle = "Nombre de votes par type", x = "Type", y = "%") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = c(0.85, 0.85)) +
+  
+  geom_image(aes(image=img_path, y = TotalVotes / sum(TotalVotes) * 100 + 1), size=.2)
+
+```
+
+
+***Analyse :***  
+
+Tout d'abord, il est intéressant d'observer que les 3 types ayant reçu le plus grand nombre de vote sont les 3 types de base (**Eau**, **Feu** et **Plante**). Presque 40% des votes se sont tournés vers ces types, notamment grâce aux Pokémons **starters** (Pokémons de départ) qui sont très populaires. Bien que le type **Eau** arrive en tête du trio, les Pokémons **Eau** étant assez largement les plus représentés, ils sont, en proportion, bien moins appréciés que les Pokémons **Feu**.   
+
+De même, le type **Normal** arrive en quatrième position, mais cela semble surtout s'expliquer par le nombre très important de Pokémons de ce type. Les types **Insecte** et **Roche** ont également reçu un nombre de vote très faible en comparaison de leur nombre.
+
+A l'inverse, les types **Ténèbres**, **Spectre** et **Dragon** ont été beaucoup cités malgré le nombre de Pokémons assez modeste.  
+
+Le grand gagnant de ce sondage apparaît assez clairement : il s'agit du type **Feu**
+
+
+
+## X. Répartition des types par génération
+
+
+***Objectif du graphique :***  
+Ici, nous allons répondre à la question suivante : **Les types de Pokémons sont-ils répartis de manière homogène entre les générations ?**
+
+
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé le jeu de données **The complete Pokemon dataset**.  
+Pour les Pokémons possédant un double type (Normal-Vol par exemple), les deux types sont pris en compte sur ce graphique. **Il ne faut donc pas** interpréter la hauteur totale des barres comme le nombre de Pokémons introduits par génération
+
+
+***Visualisation :*** 
+```{r, fig.width=8, fig.height=8}
+library(tidyverse)
+
+pok_data <- tibble(read.csv2("data/Pokemon_data.csv", header = TRUE, sep=','))
+
+pok_types <- pok_data %>%
+  pivot_longer(cols = c(type1, type2), names_to = "slot", values_to = "type") %>%
+  filter(type != "None") %>%
+  mutate(
+    dummy = "types"
+  )
+
+pok_types %>%
+  ggplot(aes(x = factor(generation), fill = type)) +
+  geom_bar(position = "stack") +  
+  geom_text(stat = "count", aes(label = after_stat(count)), 
+            position = position_stack(vjust = 0.5), size = 3, color = "white") +
+
+  scale_fill_manual(values = type_colors) +
+  labs(
+    title = "Répartition des Pokémons par type pour chaque génération", 
+    x = "Génération", 
+    y = "Nombre de Pokémons", 
+    fill = "Type") +
+  scale_x_discrete(labels = c(
+    `1` = "Gen. I :\nKanto",
+    `2` = "Gen. II :\nJohto",
+    `3` = "Gen. III :\nHoenn",
+    `4` = "Gen. IV :\nSinnoh",
+    `5` = "Gen. V :\nUnys",
+    `6` = "Gen. VI :\nKalos",
+    `7` = "Gen. VII :\nAlola",
+    `8` = "Gen. VIII :\nGalar"
+  )) +
+  theme_minimal() +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 10, face = 'bold', margin = margin(t = -20)),
+  )
+```
+
+***Analyse :***  
+
+De manière générale, on voit que la répartition des types est assez proche d'une génération à l'autre. Cependant, on peut noter quelques exceptions intéressantes : 
+
+- Le nombre très élevé de Pokémons **Poison** dans la Première Génération
+- La proportion de Pokémons de type **Sol** qui était relativement élevée dans les 5 premières générations alors qu'elle est quasiment nulle dans les 3 dernières générations
+
+
+## Comparaison des base stats des Pokémons légendaires et des Pokémons normaux
+
+***Objectif du graphique :***
+Ici, nous allons répondre à la question suivante : Les Pokémons légdendaires sont-ils les plus forts ?
+Parmi tous les Pokémon existants, certains Pokémons sont considérés comme étant spéciaux : les Pokémon légendaires, iconiques à chaque jeu, accompagnés des Pokémon fabuleux. Introduits dans les jeux Pokémon X et Y, les méga-évolutions constituent également une catégorie à part. 
+
+***Présentation :***
+Afin de savoir si ces Pokémon sont réellement plus puissants que les autres, nous allons observer la répartition des totaux des statistiques de base (abrégé "base stats") pour tous les Pokémons, en différenciant les légendaires des autres.
+Nous allons utiliser le dataset "The Complete Pokemon Dataset". 
+Les conditions des Pokémons légendaires, mythiques ("mythical" en anglais) et méga-évolutions sont dispersées dans 3 colonnes différentes que nous allons fusionner en une seule colonne "group".
+Enfin, nous affichons l'histogramme du total de base stats, en différenciant les Pokémons spéciaux par la couleur. 
+
+***Visualisation :*** 
+```{r}
+# importations des bibliothèques tidyverse
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+# ouverture du dataset
+df = read_csv("data/Pokemon_data.csv")
+
+# création d'une nouvelle colonne "group", possédant comme valeur "legendary" si le pokémon est légendaire, etc. (et "regular" si le pokémon n'est pas spécial)
+df <- df %>% mutate(group = case_when(
+  (is_legendary == TRUE & is_mega ==TRUE) ~ "Mega Legendary",
+  is_legendary == TRUE ~ "Legendary",
+  is_mythical == TRUE ~ "Mythical",
+  is_mega == TRUE ~ "Mega",
+  TRUE ~ "Regular"
+))
+
+# affichage de l'histogramme
+ggplot(df, aes(base_total)) +
+  geom_histogram(bins=80, aes(fill = group))  +
+  scale_fill_manual(values = alpha(c("slateblue", "skyblue","mediumpurple1", "steelblue", "wheat3"))) +
+  labs(
+    title = "Distribution des Pokémons selon le total de leurs base stats et leur groupe",
+    x = "Total des base stats",
+    y = "Compte",
+    fill = "Groupe")
+
+```
+
+***Analyse :***
+
+On peut observer que les Pokémons légendaires, fabuleux et méga-évolués possèdent bien un total de statistiques plus élevé que les Pokémons normaux. Ils constituent la quasi majorité de tous les Pokémons ayant 580 ou plus de base stats. 
+On observe également que la plupart des Pokémons spéciaux ont le même montant de base stats : 600, 580 ou 680. 
+De plus, les Pokémons les plus "puissants", possédant le montant le plus élevé de base stats font partie d'un groupe rare : ils sont à la fois des méga-évolutions et des Pokémons légendaires (Mega Mewtwo X, Mega Mewtwo Y et méga Rayquaza). 
+Il existe tout de même quelques cas de Pokémons spéciaux avec des statistiques moyennes voire faibles. On peut penser à Cosmog (200 de base stats), qui est un cas particulier parmi les Pokémons légendaires car il peut évoluer : sa dernière évolution, Solgaleo, possède lui 680 de base stats. 
+
+
+
+## X. Tournois Pokémons dans le monde
+
+
+***Objectif du graphique :***  
+Ici, nous allons répondre à deux questions : 
+
+- **Quels sont les pays qui organisent le plus de tournois Pokémon ?**
+- **Quelles sont les nationalités qui ont le plus remporté de tournois ?**
+
+
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé le jeu de données **Pokemon TCG - All Tournaments Decks**.  
+L'objectif du graphique, au delà de répondre aux deux questions ci-dessus, est également de voir si l'on observe une corrélation entre ces deux facteurs
+
+
+***Visualisation :***  
+```{r, fig.width=10, fig.height=6}
+library(tidyverse)
+library(maps)
+
+world_map <- map_data("world")
+tournaments <- tibble(read.csv2("data/tournaments.csv", header = TRUE, sep=','))
+
+winners_by_country <- tournaments %>%
+  select(ranking_player_tournament, id_tournament, country_player) %>%
+  distinct() %>%
+  filter(ranking_player_tournament == 1) %>%
+  count(country_player, name = "winners")
+
+tournaments_by_country <- tournaments %>%
+  select(id_tournament, country_tournament) %>%
+  distinct() %>%
+  count(country_tournament, name = "tournaments")
+
+country_data <- winners_by_country %>%
+  merge(tournaments_by_country, by.x = "country_player", by.y = "country_tournament", all = TRUE) %>%
+  mutate_all(~replace_na(.,0))
+
+# Manually change the name of some countries to match between datasets
+country_data$country_player[country_data$country_player == "Great Britain"] <- "UK"
+country_data$country_player[country_data$country_player == "Korea"] <- "South Korea"
+country_data$country_player[country_data$country_player == "United States"] <- "USA"
+
+map_data_joined <- world_map %>%
+  left_join(country_data, by = c("region" = "country_player"))
+
+centroids <- map_data_joined %>%
+  group_by(region) %>%
+  summarize(
+    long = mean(range(long, na.rm = TRUE)),
+    lat = mean(range(lat, na.rm = TRUE)),
+    tournaments = first(tournaments)
+  ) %>%
+  filter(!is.na(tournaments))
+
+# Manually adjust the centroid of some countries
+centroids$long[centroids$region == "USA"] <- -97.6
+centroids$lat[centroids$region == "USA"] <- 40.30
+centroids$long[centroids$region == "Australia"] <- 136.5
+centroids$lat[centroids$region == "Australia"] <- -25.4
+centroids$long[centroids$region == "Canada"] <- -100
+centroids$lat[centroids$region == "Canada"] <- 54
+centroids$long[centroids$region == "Norway"] <- 9
+centroids$lat[centroids$region == "Norway"] <- 62
+centroids$long[centroids$region == "Japan"] <- 139
+centroids$lat[centroids$region == "Japan"] <- 35
+centroids$long[centroids$region == "UK"] <- -2
+centroids$lat[centroids$region == "UK"] <- 53
+centroids$long[centroids$region == "Brazil"] <- -50
+centroids$lat[centroids$region == "Brazil"] <- -9
+centroids$long[centroids$region == "Chile"] <- -71
+centroids$lat[centroids$region == "Chile"] <- -32
+
+map_data_joined %>%
+  
+  ggplot() + 
+  
+  geom_polygon(aes(x = long, y = lat, group = group, fill = winners), 
+               color = "white") +
+
+  # Add points sized by number of tournaments organized
+  geom_point(data = centroids %>% filter(tournaments > 0),
+             aes(x = long, y = lat, size = tournaments),
+             color = "black", alpha = 0.35) +
+
+  geom_text(data = centroids %>% filter(tournaments > 0),
+            aes(x = long, y = lat, label = tournaments),
+            size = 3, color = "white", fontface = "bold") +
+
+  scale_fill_gradient(
+    low = "#f2c1c1",
+    high = "#a30000",
+    na.value = "gray90",
+    name = "Victoires"
+  ) +
+  
+  scale_size_continuous(
+    range = c(4, 15),
+    name = "Tournois\norganisés"
+  ) +
+  
+  annotate("text",
+    x = Inf, y = Inf,
+    label = "Les chiffres indiquent pour chaque pays\nle nombre de tournois organisés      ",
+    hjust = 1.0, vjust = 1.5,
+    size = 3,
+    color = "black",
+    fontface = "italic") +
+  
+  coord_fixed(ratio = 1.3, 
+    xlim = c(-170, 180), 
+    ylim = c(-55, 80)
+  ) +
+  labs(title = "Nombre de tournois organisés et remportés par pays/nationalité") +
+  theme_minimal() +
+  theme(
+    plot.title = (element_text(hjust = 0.5)),
+    plot.margin = margin(5, 5, 5, 5),
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    legend.title.align = 0.5)
+
+```
+
+***Analyse :***  
+
+La corrélation entre le nombre de tournois organisés et le nombre de tournois remportés apparaît très clairement sur cette carte. Cela semble assez logique, ces deux données étant de bons indicateurs du développement de la culture Pokémon dans chaque pays.  
+Cette culture semble être surtout développée dans 3 régions du monde : 
+
+- **L'Europe**
+- **L'Amérique**
+- **L'Océanie** et **l'Asie du Sud-Est**
+
+Deux pays se démarquent encore des autres : le **Japon**, pays d'origine de la licence et les **Etats-Unis** 
+
+
+## X-Cartes les plus utilisés en tournoi
+
+***Objectif du graphique :***  
+Ici, nous allons répondre à la question suivante : **Quelles sont les cartes les plus utilisées en tournoi officiel Pokémon ?**
+
+
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé le jeu de données **Pokemon TCG - All Tournaments Decks**.  
+Ce graphique prend en compte l'ensemble des decks de cartes jouées par chacun des joueurs à chacun des tournois officiels. 
+
+
+***Visualisation :***  
+```{r, fig.width=10}
+
+usage_cards <- tournaments %>%
+  filter(type_card == "Pokémon") %>%
+  select(id_card, energy_type_card, amount_card) %>%
+  group_by(id_card) %>%
+  summarise(
+    usage = sum(amount_card), 
+    energy_type_card = first(energy_type_card),
+    .groups = "drop") %>%
+  arrange(desc(usage)) %>% 
+  left_join(select(tournaments, id_card, name_card), join_by(id_card)) %>%
+  unique() %>%
+  top_n(10, usage) %>%
+  mutate(set_code = str_extract(id_card, "^[A-Za-z]+"),
+         number = str_extract(id_card, "[0-9]+")) %>%
+  mutate(number = str_remove(number, "^0+"))
+
+library(httr)
+library(jsonlite)
+library(dplyr)
+library(tidyr)
+library(stringr)
+
+response <- GET("https://api.pokemontcg.io/v2/sets")
+sets_data <- fromJSON(content(response, as = "text"))$data
+
+sets_df <- sets_data %>%
+  select(id, name, ptcgoCode) %>%
+  rename(api_set_id = id, set_name = name)
+
+card_images = read.csv("data/pokemon-cards.csv") %>% tibble() %>%
+  separate(id, into = c("set_id", "number"), sep = "-", remove = FALSE)
+# Manually adjust a set name to match
+card_images$set_id <- replace(card_images$set_id, card_images$set_id == 'swshp', 'sv8') 
+
+card_images <- card_images %>%
+  left_join(sets_df, by = c("set_id" = "api_set_id")) %>%
+  mutate(number = str_extract(number, "\\d+")) %>%
+  mutate(number = str_remove(number, "^0+"))
+
+usage_cards <- usage_cards %>%
+  left_join(card_images, by = c("set_code" = "ptcgoCode", "number" = "number")) %>%
+  select(usage, name_card, image_url, energy_type_card)
+
+usage_cards$energy_type_card[usage_cards$energy_type_card == "Colorless"] <- "Normal"
+usage_cards$energy_type_card[usage_cards$energy_type_card == "Darkness"] <- "Dark"
+
+# Draw graph
+usage_cards %>%
+  ggplot(aes(x = reorder(name_card, -usage), 
+             y = usage, 
+             fill = energy_type_card)) +
+  # Colored bars
+  geom_col(width = .9) +
+  scale_fill_manual(values = type_colors) +
+
+  geom_image(aes(image=image_url, y = usage + 700), size=.17) +
+  
+  ylim(0, 4400) +
+  
+  labs(
+    title = "Cartes les plus utilisées en tournoi",
+    subtitle = "La couleur correspond au type des Pokémons",
+    y = "Nombre de cartes utilisées"
+    ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1), 
+    axis.title.x = element_blank(),
+    legend.position = "None",
+    plot.margin = margin(5, 5, 5, 5)
+  )
+
+```
+
+***Analyse :***  
+
+Tout d'abord, on voit que beaucoup des Pokémons les plus utilisés possèdent un talent, c'est-à-dire une capacité spéciale. Cela n'est pas surprenant, puisque ces capacités constituent un avantage stratégique en duel.
+Cela explique que **Comfey** et **Archeops** soient les Pokémons les plus utilisés, puisqu'ils disposent d'un talent pouvant être utile avec n'importe quel deck, peu importe le type.
+On voit également qu'une proportion conséquente des cartes les plus utilisées sont des Pokémons de type **Normal**. Leur type leur permettant d'être utilisé en combinaison avec n'importe quel autre type, ce qui explique qu'ils soient joués dans beaucoup de decks différents.
+
+
+## X. Visualisation du classement des joueurs dans les tournois de carte Pokémon en fonction du rang de leur deck en terme de prix dans le tournoi 
+
+
+***Objectif du graphique :***  
+
+Nous cherchons ici à répondre à la question suivante : **Le prix total d’un deck influence-t-il le classement final d’un joueur dans un tournoi de cartes Pokémon ? ?**
+Des tournois de cartes Pokémon sont organisés dans le monde entier. Dans chaque tournoi, les joueurs participent avec un deck qu’ils ont préalablement préparé. Il est intéressant d’analyser si le classement d’un deck en termes de prix peut avoir un impact sur le classement final du joueur dans le tournoi.
+Grâce à ce graphique, nous cherchons par exemple à savoir si un joueur ayant le deck le plus cher termine régulièrement dans le top 10 de la compétition.
+Nous avons créé un **boxplot** permettant de visualiser la médiane, les premier et troisième quartiles, ainsi que les valeurs aberrantes (outliers) pour chaque rang. Nous y avons également ajouté des courbes de tendance pour la médiane et la moyenne (hors outliers) en fonction du classement final.
+Un second **boxplot** a été réalisé pour présenter les statistiques de base concernant le prix des decks selon leur rang.
+
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé les données du dataset **"tournaments.csv"**.
+Nous avons conservé uniquement les tournois comptant **au moins 10 participants**.
+Le prix du deck de chaque joueur a été calculé, puis nous avons déterminé le rang de chaque deck en termes de prix dans chaque tournoi. Ensuite, nous avons associé à chaque deck le classement final obtenu par le joueur. 
+Enfin, nous avons pu créer un boxplot représentant le classement final du joueur en fonction du rang de son deck en termes de prix dans le tournoi.
+
+
+***Visualisation :***  
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+# Chargement des librairies
+library(dplyr)
+library(ggplot2)
+library(readr)
+
+# Lecture du dataset
+df <- read_csv("data/tournaments.csv")
+
+# Nombre de participants par tournoi
+participants_par_tournoi <- df %>%
+  distinct(id_tournament, id_player) %>%  # Un joueur unique par tournoi
+  count(id_tournament, name = "nb_participants")
+
+# On garde uniquement les tournois avec au moins 10 participants
+tournois_valide <- participants_par_tournoi %>%
+  filter(nb_participants >= 10)
+
+# On filtre le dataset principal
+df <- df %>%
+  semi_join(tournois_valide, by = "id_tournament")
+
+nb_decks <- 70
+
+# Conversion manuelle des colonnes en numériques
+df <- df %>%
+  mutate(
+    amount_card = as.numeric(amount_card),
+    price_card = as.numeric(price_card),
+    ranking_player_tournament = as.numeric(ranking_player_tournament)
+  )
+
+# Calcul du prix total du deck (prix unitaire * quantité)
+df <- df %>%
+  mutate(total_card_price = amount_card * price_card)
+
+# Prix total du deck par joueur et tournoi
+deck_price <- df %>%
+  group_by(id_player, id_tournament) %>%
+  summarise(total_deck_price = sum(total_card_price, na.rm = TRUE), .groups = "drop")
+
+# Récupération du classement du joueur dans le tournoi
+ranking_info <- df %>%
+  select(id_player, id_tournament, ranking_player_tournament) %>%
+  distinct()
+
+# Fusion des données
+merged_df <- left_join(deck_price, ranking_info, by = c("id_player", "id_tournament"))
+
+# Calcul du rang du prix du deck par tournoi
+merged_df <- merged_df %>%
+  group_by(id_tournament) %>%
+  mutate(rank_price_deck = rank(-total_deck_price, ties.method = "min")) %>%  # Le plus cher = rang 1
+  ungroup()
+
+# Filtrer pour ne garder que les nb_decks decks les plus chers par tournoi
+top10_df <- merged_df %>%
+  filter( rank_price_deck <= nb_decks )
+
+# Calcul des médianes pour la courbe de tendance
+median_df <- top10_df %>%
+  group_by(rank_price_deck) %>%
+  summarise(median_rank = median(ranking_player_tournament), .groups = "drop")
+
+# Courbe de référence y = x
+diag_df <- data.frame(
+  rank_price_deck = factor(1:nb_decks, levels = as.character(1:nb_decks)),
+  ranking_player_tournament = 1:nb_decks
+)
+
+mean_no_outliers_df <- top10_df %>%
+  group_by(rank_price_deck) %>%
+  summarise(
+    Q1 = quantile(ranking_player_tournament, 0.25),
+    Q3 = quantile(ranking_player_tournament, 0.75),
+    IQR = Q3 - Q1,
+    mean_no_outliers = mean(ranking_player_tournament[ranking_player_tournament >= (Q1 - 1.5*IQR) & ranking_player_tournament <= (Q3 + 1.5*IQR)]),
+    .groups = "drop"
+  )
+
+# Conversion de rank_price_deck en numérique pour la régression
+median_df_1 <- median_df %>%
+  mutate(rank_price_deck_num = as.numeric(as.character(rank_price_deck)))
+
+mean_no_outliers_df_1 <- mean_no_outliers_df %>%
+  mutate(rank_price_deck_num = as.numeric(as.character(rank_price_deck)))
+
+# LOESS pour la médiane
+loess_median <- loess(median_rank ~ rank_price_deck_num, data = median_df_1)
+# Prédictions
+preds_median <- predict(loess_median)
+# R² "manuel"
+ss_res <- sum((median_df$median_rank - preds_median)^2)
+ss_tot <- sum((median_df$median_rank - mean(median_df_1$median_rank))^2)
+r2_loess_median <- 1 - (ss_res / ss_tot)
+# LOESS pour la moyenne
+loess_mean <- loess(mean_no_outliers ~ rank_price_deck_num, data = mean_no_outliers_df_1)
+# Prédictions
+preds_mean <- predict(loess_mean)
+ss_res_mean <- sum((mean_no_outliers_df$mean_no_outliers - preds_mean)^2)
+ss_tot_mean <- sum((mean_no_outliers_df$mean_no_outliers - mean(mean_no_outliers_df_1$mean_no_outliers))^2)
+r2_loess_mean <- 1 - (ss_res_mean / ss_tot_mean)
+
+
+
+# Graphique complet
+ggplot(top10_df, aes(x = as.factor(rank_price_deck), y = ranking_player_tournament, fill = as.numeric(rank_price_deck))) +
+  geom_boxplot(color = "black", outlier.size = 0.8, alpha = 0.9) +
+  
+  #geom_line(data = mean_no_outliers_df,
+  #aes(x = rank_price_deck, y = mean_no_outliers, group = 1),
+  #color = "darkorange", size = 1.2) +
+  
+  geom_line(data = diag_df,
+            aes(x = rank_price_deck, y = ranking_player_tournament, group = 1,
+                color = "Référence y = x"), linetype = "solid", size = 1.5) +
+  
+  geom_smooth(data = median_df,
+              aes(x = rank_price_deck, y = median_rank, group = 1, color = "Médiane"),
+              method = "loess", size = 1.5, se = FALSE, show.legend = TRUE) +
+  
+  geom_smooth(data = mean_no_outliers_df,
+              aes(x = rank_price_deck, y = mean_no_outliers, group = 1, color = "Moyenne sans outliers"),
+              method = "loess", size = 1.5, se = FALSE, show.legend = TRUE) +
+  
+  scale_fill_gradient(
+    name = "Rang du deck",
+    low = "navy", 
+    high = "turquoise"
+  ) +
+  scale_color_manual(
+    name = "Courbes",
+    values = c("Médiane" = "purple3", "Moyenne sans outliers" = "chartreuse3", "Référence y = x" = "firebrick")
+  ) +
+  scale_y_reverse(breaks = c(1, seq(10, max(top10_df$ranking_player_tournament, na.rm = TRUE), by = 10)))+
+  labs(
+    title = paste0("Distribution du classement des joueurs pour les\n ", nb_decks, " decks les plus chers (par tournoi)"),
+    subtitle = paste0("R² Médiane = ", round(r2_loess_median, 3), " | R² Moyenne sans outliers = ", round(r2_loess_mean, 3)),
+    x = "Rang du deck en terme de prix (1 = le plus cher)",
+    y = "Classement du joueur",
+    fill = "Rang du deck"
+  ) +
+  scale_x_discrete(breaks = as.character(c(1, seq(10, nb_decks, by = 10))))+
+  theme_light(base_size = 13) + 
+  theme(legend.position = "right",
+        # Textes en gras
+        plot.title = element_text(face = "bold"),
+        plot.subtitle = element_text(face = "bold"),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(face = "bold"),
+        axis.text.x = element_text(face = "bold"),
+        axis.text.y = element_text(face = "bold"),
+        legend.title = element_text(face = "bold"),
+        legend.text = element_text(face = "bold"),
+        axis.ticks = element_line(color = "black", size = 0.7),
+        axis.line = element_line(color = "black", size = 0.7),
+        plot.margin = margin(t = 30, r = 10, b = 10, l = 10)
+  )
+
+# Calcul de la moyenne du prix des decks par rang
+mean_price_df <- top10_df %>%
+  group_by(rank_price_deck) %>%
+  summarise(mean_price = mean(total_deck_price, na.rm = TRUE), .groups = "drop")
+
+
+
+# Graphique avec la courbe de moyenne
+ggplot(top10_df, aes(x = as.factor(rank_price_deck), y = total_deck_price, fill = as.numeric(rank_price_deck))) +
+  geom_boxplot(color = "black", outlier.size = 0.8, alpha = 0.9) +
+  
+  # Courbe de moyenne
+  geom_line(data = mean_price_df,
+            aes(x = as.factor(rank_price_deck), y = mean_price, group = 1, color = "Moyenne"),
+            size = 1.5) +
+  
+  scale_fill_gradient(
+    name = "Rang du deck",
+    low = "navy", 
+    high = "turquoise"
+  ) +
+  scale_color_manual(
+    name = "Courbes",
+    values = c("Moyenne" = "darkorange")
+  ) +
+  
+  labs(
+    title = paste0("Distribution des prix des decks pour les\n ", nb_decks, " decks les plus chers (par tournoi)"),
+    x = "Rang du deck en terme de prix (1 = le plus cher)",
+    y = "Prix total du deck en $",
+    fill = "Rang du deck"
+  ) +
+  scale_x_discrete(breaks = as.character(c(1, seq(10, nb_decks, by = 10)))) +
+  theme_light(base_size = 13) + 
+  theme(legend.position = "right",
+        plot.title = element_text(face = "bold"),
+        axis.title.x = element_text(face = "bold"),
+        axis.title.y = element_text(face = "bold"),
+        axis.text.x = element_text(face = "bold"),
+        axis.text.y = element_text(face = "bold"),
+        legend.title = element_text(face = "bold"),
+        legend.text = element_text(face = "bold"),
+        axis.ticks = element_line(color = "black", size = 0.7),
+        axis.line = element_line(color = "black", size = 0.7),
+        plot.margin = margin(t = 30, r = 10, b = 10, l = 10)
+  )
+
+# Génère la séquence de valeurs de nb_decks à tester
+deck_values <- seq(10, 140, by = 10)
+
+# Initialise une liste vide pour stocker les résultats
+resultats <- data.frame(nb_participants = integer(),
+                        nb_tournois = integer(),
+                        total_tournois = integer(),
+                        pourcentage = numeric())
+
+# Boucle sur chaque valeur de nb_decks
+for (x in deck_values) {
+  stats_x <- participants_par_tournoi %>%
+    summarise(
+      total_tournois = n(),
+      nb_tournois = sum(nb_participants >= x),
+      pourcentage = (nb_tournois / total_tournois) * 100
+    )
+  
+  # Ajoute la ligne au dataframe
+  resultats <- rbind(resultats, data.frame(
+    nb_participants = x,
+    nb_tournois = stats_x$nb_tournois,
+    total_tournois = stats_x$total_tournois,
+    pourcentage = round(stats_x$pourcentage, 2)
+  ))
+}
+
+# Affiche le tableau final
+message <- paste("Voici des statistiques, le pourcentage de tournois avec au moins nb_participants : ")
+print(message)
+print(resultats)
+
+```
+
+***Analyse :***
+
+On observe globalement que les decks les plus chers des tournois **(top 20 en termes de prix)** sont associés aux meilleures performances.
+Par exemple, pour les decks les plus onéreux **(rang = 1)**, **50 %** des joueurs terminent dans le **top 20**, et **près de 25 %** atteignent le **top 10** du tournoi.
+À l’inverse, pour les decks classés au **rang 60**, **75 %** des joueurs terminent **en dehors du top 30.**
+Cependant, ce graphique ne permet pas d’identifier clairement une relation linéaire entre la performance en tournoi et le rang du deck en termes de prix.
+
+**Le second graphique, qui présente le prix total des decks selon leur rang**, montre que le prix des decks décroît principalement pour **les 30 premiers rangs**. Au-delà, les prix restent relativement similaires. Cette faible variation peut expliquer l’absence de corrélation linéaire dans le premier graphique.
+
+En conclusion, on peut avancer que les joueurs souhaitant viser les meilleures places doivent investir significativement plus que leurs adversaires.
+À l’inverse, ceux qui utilisent des decks au prix moyen peuvent espérer atteindre des positions intermédiaires, généralement **en dehors du top 40.**
+
+
+## X. Visualisation de la popularité des jeux vidéos Pokémon à l'aide du nombre de ventes de 1996 à 2014  
+  
+  
+***Objectif du graphique :***  
+
+Ici, nous allons répondre aux questions suivantes : **À quel point les jeux vidéos Pokémon sont-ils populaires ? Les jeux récents sont-ils plus populaires que les anciens ?**
+Les jeux vidéos Pokémon existent depuis très longtemps et de nouveaux jeux ne cessent de sortir.
+À l'aide de ce graphique, le but est d'observer si les jeux vidéos Pokémon occupent une place importante sur le marché des jeux vidéos et de voir comment évolue cette place au cours du temps.
+Nous avons créé un barchart permettant de comparer chaque jeu vidéo Pokémon avec le jeu le plus vendu de la même année.
+
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé les données du dataset **"vgsales.csv"**.
+Nous avons conservé uniquement les jeux Pokémon qui ont des ventes globales supérieures à 6 millions afin de conserver uniquement les jeux principaux de Pokémon et éliminer tous les spin-off.
+Nous avons ensuite comparer à l'aide d'un barchart le nombre de ventes des jeux Pokémon avec le jeu vidéo le plus vendu de la même année. On peut voir également la position du jeu Pokémon parmi les ventes globales de l'année.
+
+
+***Visualisation :***  
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Charger les bibliothèques
+library(tidyverse)
+
+# Charger le dataset
+df <- read_csv("data/vgsales.csv")
+
+# 1. Filtrer les jeux Pokémon avec plus de 6 millions de ventes
+pokemon_games <- df %>%
+  filter(str_detect(Name, "(?i)pokemon") & Global_Sales > 6) %>%
+  drop_na(Year, Global_Sales) %>%
+  filter(is.finite(Global_Sales))
+
+# 2. Identifier le jeu le plus vendu par année
+top_games_by_year <- df %>%
+  drop_na(Year, Global_Sales) %>%
+  filter(is.finite(Global_Sales)) %>%
+  group_by(Year) %>%
+  slice_max(order_by = Global_Sales, n = 1) %>%
+  ungroup()
+
+# 3. Calculer le rang de chaque jeu Pokémon par année
+df_with_rank <- df %>%
+  drop_na(Year, Global_Sales) %>%
+  filter(is.finite(Global_Sales)) %>%
+  group_by(Year) %>%
+  mutate(Rank = rank(-Global_Sales)) %>%
+  ungroup()
+
+# 4. Associer chaque jeu Pokémon à son jeu top de l'année et ajouter le rang
+comparison_df <- pokemon_games %>%
+  left_join(top_games_by_year, by = "Year", suffix = c("_pokemon", "_top")) %>%
+  left_join(df_with_rank %>% filter(str_detect(Name, "(?i)pokemon")), by = c("Year", "Name_pokemon" = "Name")) %>%
+  select(Year,
+         Pokemon_Game = Name_pokemon,
+         Pokemon_Sales = Global_Sales_pokemon,
+         Top_Game = Name_top,
+         Top_Game_Sales = Global_Sales_top,
+         Pokemon_Rank = Rank)
+
+# 5. Préparer les données pour un bar chart
+plot_data <- comparison_df %>%
+  drop_na(Year, Pokemon_Sales, Top_Game_Sales) %>%
+  filter(is.finite(Pokemon_Sales), is.finite(Top_Game_Sales)) %>%
+  pivot_longer(cols = c(Pokemon_Sales, Top_Game_Sales),
+               names_to = "Type",
+               values_to = "Sales") %>%
+  mutate(
+    Game_Name = ifelse(Type == "Pokemon_Sales", Pokemon_Game, Top_Game),
+    Color = ifelse(Type == "Pokemon_Sales", "Pokemon_Game", "Top_Game"),
+    Label = gsub("(?i)pokemon", "", Game_Name, ignore.case = TRUE),
+    Rank_Label = ifelse(Type == "Pokemon_Sales", paste(Pokemon_Rank), NA)
+  )
+
+# 6. Faire un bar chart avec un thème sombre personnalisé
+ggplot(plot_data, aes(x = factor(Year), y = Sales, fill = Color)) +
+  geom_bar(stat = "identity", position = position_dodge2(width = 0.9, preserve = "single"),
+           width = 0.7) +
+  labs(title = "Comparaison des ventes de jeux vidéos: Pokémon vs Top Vente par Année",
+       x = "Année",
+       y = "Ventes Globales (Millions)") +
+  scale_fill_manual(values = c("Pokemon_Game" = "#1f77b4", "Top_Game" = "#ff7f0e"),
+                    labels = c("Jeu Pokémon", "Top Jeu Année"),
+                    name = "Type de Jeu") +
+  scale_y_continuous(limits = c(0, 100)) +
+  theme_minimal(base_family = "sans") +  # Changement de thème
+  theme(
+    axis.text.x = element_text(angle = 70, hjust = 1, size = 10, face = "bold", color = "black"),
+    axis.text.y = element_text(size = 10, face = "bold", color = "black"),
+    axis.title.x = element_text(face = "bold", size = 12, color = "black"),
+    axis.title.y = element_text(face = "bold", size = 12, color = "black"),
+    plot.title = element_text(face = "bold", size = 12, hjust = 0.5, color = "black"),
+    legend.title = element_text(face = "bold", color = "black"),
+    legend.text = element_text(face = "bold", color = "black"),
+    axis.ticks = element_line(color = "black", size = 0.7),
+    axis.line = element_line(color = "black", size = 0.7),
+    plot.margin = margin(t = 30, r = 10, b = 10, l = 10)
+  ) +
+  geom_text(aes(label = Label),
+            position = position_dodge(width = 0.8),
+            vjust = 0.25,
+            hjust = -0.05,
+            size = 3.5,
+            colour = "black",
+            angle = 90) +
+  
+  geom_text(aes(label = Rank_Label, y = Sales / 2),
+            position = position_dodge2(width = 0.9, preserve = "single"),
+            vjust = 0.5,
+            hjust = 0.25,
+            size = 4,
+            colour = "black",
+            fontface = "bold") + 
+  
+  annotate("text",
+           x = Inf, y = Inf,
+           label = "Le chiffre à l'intérieur des barres indique\nla position du jeu Pokémon parmi\nles ventes globales de l'année",
+           hjust = 1.0, vjust = 1.5,
+           size = 3,
+           color = "black",
+           fontface = "italic")
+
+
+```
+
+***Analyse :***
+
+On peut observer que les jeux Pokémon récents se vendent globalement moins bien que les anciens. On peut remarquer cela car les 2 jeux Pokémon les plus vendus de l'histoire sont sortis en **1996 et 1999** avec respectivement **plus de 30 et 20 millions** de ventes, tandis que les plus récents peine à atteindre les **20 millions** de ventes. 
+
+Cependant à l'aide des rangs des jeux Pokémon parmi les ventes globales de chaque année, on peut voir qu'à chaque sortie d'un nouveau jeu Pokémon, ce dernier figure presque toujours parmi le **TOP 5** des ventes de l'année. Récemment, il est rare de voir des jeux Pokémon en première position comme on avait pu le voir en **1996 et 1999**. 
+Mais on peut conclure que les jeux Pokémon occupe toujours une place très importante sur le marché du jeu vidéo.
+On peut expliquer cette baisse des ventes par le fait qu'il y'a de plus en plus de concurrence et un manque de nouveauté dans le contenu.
+
+
+
+## X. Visualisation de la répartition régionale des ventes des jeux Pokémon de 1996 à 2014 
+
+
+***Objectif du graphique :***  
+
+Nous cherchons ici à répondre aux questions suivantes : **Comment les ventes des jeux Pokémon se répartissent au sein des régions ? Est-ce que cette répartition est différente selon le jeu et l'année ?**
+Les jeux vidéos Pokémon ont été développés par des studios Japonais, et pourtant le succès des jeux est visible dans le monde eniter.
+À l'aide de ce graphique, le but est de comparer les proportions des ventes entre chaque région pour comprendre la popularité du jeu dans la région.
+Nous avons créé un barchart permettant de comparer les proportions des ventes entre chaque région pour chaque jeu.
+
+***Présentation :***  
+
+Pour réaliser ce graphique, nous avons utilisé les données du dataset **"vgsales.csv"**.
+Nous avons conservé uniquement les jeux Pokémon qui ont des ventes globales supérieures à 6 millions afin de conserver uniquement les jeux principaux de Pokémon et éliminer tous les spin-off.
+
+
+***Visualisation :***  
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+
+# Charger les données
+df <- read_csv("data/vgsales.csv")
+
+# 1. Filtrer les jeux Pokémon avec plus de 6 millions de ventes
+pokemon_games <- df %>%
+  filter(str_detect(Name, "(?i)pokemon") & Global_Sales > 6) %>%
+  drop_na(Year, Global_Sales) %>%
+  filter(is.finite(Global_Sales))
+
+# 2. Nettoyer les noms de jeux : enlever "Pokémon" et ajouter l'année
+pokemon_games <- pokemon_games %>%
+  mutate(Name = gsub("(?i)pokemon", "", Name, ignore.case = TRUE),
+         Name = paste(Name, " (", Year, ")", sep = "")) 
+
+# 3. Réorganiser les données et garder l'année
+pokemon_long <- pokemon_games %>%
+  select(Name, Year, NA_Sales, EU_Sales, JP_Sales, Other_Sales) %>%  # Garder l'année
+  pivot_longer(cols = c(NA_Sales, EU_Sales, JP_Sales, Other_Sales),
+               names_to = "Region",
+               values_to = "Sales")
+
+# 4. Ajouter les proportions pour les étiquettes
+pokemon_long <- pokemon_long %>%
+  group_by(Name) %>%
+  mutate(Prop = Sales / sum(Sales)) %>%
+  ungroup() %>%
+  mutate(Label = scales::percent(Prop, accuracy = 1))  # format "25%"
+
+# 5. Tracer le graphique avec les labels, ordonné par année de sortie
+ggplot(pokemon_long, aes(x = fct_reorder(Name, Year, .fun = min), y = Sales, fill = Region)) +
+  geom_bar(stat = "identity", position = "fill") +
+  geom_text(aes(label = Label), 
+            position = position_fill(vjust = 0.5), 
+            color = "white", size = 3) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  labs(
+    title = "Répartition régionale des ventes des jeux Pokémon \nde 1996 à 2014 (>6M ventes)",
+    x = "Jeu Pokémon",
+    y = "Proportion des ventes (%)",
+    fill = "Région"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"),
+    axis.text.y = element_text(face = "bold"),
+    axis.title.x = element_text(face = "bold"),
+    axis.title.y = element_text(face = "bold"),
+    plot.title = element_text(face = "bold"),
+    legend.title = element_text(face = "bold"),
+    legend.text = element_text(face = "bold"),
+    axis.ticks = element_line(color = "black", size = 0.7),
+    axis.line = element_line(color = "black", size = 0.7),
+    plot.margin = margin(t = 30, r = 10, b = 10, l = 10)
+  )
+
+```
+
+***Analyse :***
+
+On remarque que la répartition des ventes par région est relativement similaire d’un jeu à l’autre.**L'Europe** représente en général **entre 25 et 30 %** des ventes. **L'Amérique du Nord**, quant à elle, représente  **entre 35 et 41 %** des ventes, tandis que le pays créateur, le Japon, se situe **entre 30 et 38 %**.
+Au vu de ces proportions, on peut conclure que l'Amérique du Nord représente la plus grande part des ventes, suivie du Japon, puis de l'Europe. Cependant, voir l’Europe en troisième position peut surprendre, car elle est démographiquement plus importante que le Japon et l’Amérique du Nord. Cela pourrait s’expliquer par une culture vidéoludique différente, une moindre popularité de Pokémon à certaines époques, ou des efforts marketing moindres sur le continent européen. Enfin, il est logique que le Japon conserve une part importante des ventes, représentant systématiquement environ un tiers, compte tenu de la forte culture autour de Pokémon et de l’impact de la franchise dans son pays d’origine.
+
+On observe tout de même certaines exceptions. Pour les jeux **Pokémon Noir & Blanc**, **l'Europe** affiche ses pires score avec **21 et 22 %**, au profit du **Japon**, qui atteint ses meilleurs scores avec **37 et 38 %**.
+
+
+
+# III. Conclusion
