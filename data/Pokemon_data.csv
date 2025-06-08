@@ -485,7 +485,7 @@ pokedex_number,name,generation,classfication,abilities,height_m,weight_kg,type1,
 410,Shieldon,4,Shield Pokemon,"['Sturdy', 'Soundproof']",0.5,57,Rock,Steel,350,30,42,118,42,88,30,0.5,1,0.5,1,0.5,4,1,0.25,1,1,4,0.5,0.25,0,0.5,0.5,1,2,45,"7,710",70,0,0,0
 411,Bastiodon,4,Shield Pokemon,"['Sturdy', 'Soundproof']",1.3,149.5,Rock,Steel,495,60,52,168,47,138,30,0.5,1,0.5,1,0.5,4,1,0.25,1,1,4,0.5,0.25,0,0.5,0.5,1,2,45,"7,710",70,0,0,0
 412,Burmy,4,Bagworm Pokemon,"['Shed Skin', 'Overcoat']",0.2,3.4,Bug,None,224,40,29,45,29,45,36,1,1,1,1,1,0.5,2,2,1,0.5,0.5,1,1,1,1,2,1,1,120,"3,855",70,0,0,0
-413,Wormadam ,4,Bagworm Pokemon,"['Anticipation', 'Overcoat']",0.5,6.5,Bug,Ground,424,60,79,105,59,85,36,1,1,1,0,1,0.5,2,2,1,1,0.5,2,1,0.5,1,1,1,2,45,"3,855",70,0,0,0
+413,Wormadam,4,Bagworm Pokemon,"['Anticipation', 'Overcoat']",0.5,6.5,Bug,Ground,424,60,79,105,59,85,36,1,1,1,0,1,0.5,2,2,1,1,0.5,2,1,0.5,1,1,1,2,45,"3,855",70,0,0,0
 414,Mothim,4,Moth Pokemon,"['Swarm', 'Tinted Lens']",0.9,23.3,Bug,Flying,424,70,94,50,94,50,66,0.5,1,1,2,1,0.25,2,2,1,0.25,0,2,1,1,1,4,1,1,45,"3,855",70,0,0,0
 415,Combee,4,Tiny Bee Pokemon,"['Honey Gather', 'Hustle']",0.3,5.5,Bug,Flying,244,30,30,42,30,42,70,0.5,1,1,2,1,0.25,2,2,1,0.25,0,2,1,1,1,4,1,1,120,"3,855",70,0,0,0
 416,Vespiquen,4,Beehive Pokemon,"['Pressure', 'Unnerve']",1.2,38.5,Bug,Flying,474,70,80,102,80,102,40,0.5,1,1,2,1,0.25,2,2,1,0.25,0,2,1,1,1,4,1,1,45,"3,855",70,0,0,0
@@ -641,7 +641,7 @@ pokedex_number,name,generation,classfication,abilities,height_m,weight_kg,type1,
 552,Krokorok,5,Desert Croc Pokemon,"['Intimidate', 'Moxie', 'Anger Point']",1,33.4,Ground,Dark,351,60,82,45,45,45,74,2,0.5,1,0,2,2,1,1,0.5,2,1,2,1,0.5,0,0.5,1,2,90,"5,140",70,0,0,0
 553,Krookodile,5,Intimidation Pokemon,"['Intimidate', 'Moxie', 'Anger Point']",1.5,96.3,Ground,Dark,519,95,117,80,65,70,92,2,0.5,1,0,2,2,1,1,0.5,2,1,2,1,0.5,0,0.5,1,2,45,"5,140",70,0,0,0
 554,Darumaka,5,Zen Charm Pokemon,"['Hustle', 'Inner Focus']",0.6,37.5,Fire,None,315,70,90,45,15,45,50,0.5,1,1,1,0.5,1,0.5,1,1,0.5,2,0.5,1,1,1,2,0.5,2,120,"5,140",70,0,0,0
-554,Galarian Darumaka,5,Zen Charm Pokemon,"['Hustle', 'Inner Focus']",0.7,40,Ice,None,315,70,90,45,15,45,50,1,1,1,1,1,2,2,1,1,1,1,0.5,1,1,1,2,2,1, ,"5,140",70,0,0,0
+554,Galarian Darumaka,5,Zen Charm Pokemon,"['Hustle', 'Inner Focus']",0.7,40,Ice,None,315,70,90,45,15,45,50,1,1,1,1,1,2,2,1,1,1,1,0.5,1,1,1,2,2,1,,"5,140",70,0,0,0
 555,Darmanitan Standard Mode,5,Blazing Pokemon,"['Sheer Force', 'Zen Mode']",1.3,92.9,Fire,None,480,105,140,55,30,55,95,0.5,1,1,1,0.5,1,0.5,1,1,0.5,2,0.5,1,1,1,2,0.5,2,60,"5,140",70,0,0,0
 555,Darmanitan Zen Mode,5,Blazing Pokemon,"['Sheer Force', 'Zen Mode']",1.3,92.9,Fire,Psychic,540,105,30,105,140,105,55,1,2,1,1,0.5,0.5,0.5,1,2,0.5,2,0.5,1,1,0.5,2,0.5,2,60,"5,140",70,0,0,0
 555,Galarian Standard Mode Darmanitan,5,Zen Charm Pokemon,"['Gorilla Tactics', 'Zen Mode']",1.7,120,Ice,None,480,105,140,55,30,55,95,1,1,1,1,1,2,2,1,1,1,1,0.5,1,1,1,2,2,1,60,"5,140",70,0,0,0
@@ -811,7 +811,7 @@ pokedex_number,name,generation,classfication,abilities,height_m,weight_kg,type1,
 707,Klefki,6,Key Ring Pokemon,"['Prankster', 'Magician']",0.2,3,Steel,Fairy,470,57,80,91,80,87,75,0.25,0.5,0,1,0.5,1,2,0.5,1,0.5,2,0.5,0.5,0,0.5,0.5,1,1,75,"5,140",70,0,0,0
 708,Phantump,6,Stump Pokemon,"['Natural Cure', 'Frisk', 'Harvest']",0.4,7,Ghost,Grass,309,43,70,48,50,60,38,1,2,1,0.5,1,0,2,2,2,0.5,0.5,2,0,1,1,1,1,0.5,120,"5,140",70,0,0,0
 709,Trevenant,6,Elder Tree Pokemon,"['Natural Cure', 'Frisk', 'Harvest']",1.5,71,Ghost,Grass,474,85,110,76,65,82,56,1,2,1,0.5,1,0,2,2,2,0.5,0.5,2,0,1,1,1,1,0.5,60,"5,140",70,0,0,0
-710,Pumpkaboo ,6,Pumpkin Pokemon,"['Pickup', 'Frisk', 'Insomnia']",0.8,15,Ghost,Grass,335,59,66,70,44,55,41,1,2,1,0.5,1,0,2,2,2,0.5,0.5,2,0,1,1,1,1,0.5,120,"5,140",70,0,0,0
+710,Pumpkaboo,6,Pumpkin Pokemon,"['Pickup', 'Frisk', 'Insomnia']",0.8,15,Ghost,Grass,335,59,66,70,44,55,41,1,2,1,0.5,1,0,2,2,2,0.5,0.5,2,0,1,1,1,1,0.5,120,"5,140",70,0,0,0
 711,Gourgeist,6,Pumpkin Pokemon,"['Pickup', 'Frisk', 'Insomnia']",0.9,12.5,Ghost,Grass,494,65,90,122,58,75,84,1,2,1,0.5,1,0,2,2,2,0.5,0.5,2,0,1,1,1,1,0.5,60,"5,140",70,0,0,0
 712,Bergmite,6,Ice Chunk Pokemon,"['Own Tempo', 'Ice Body', 'Sturdy']",1,99.5,Ice,None,304,55,69,85,32,35,28,1,1,1,1,1,2,2,1,1,1,1,0.5,1,1,1,2,2,1,190,"5,140",70,0,0,0
 713,Avalugg,6,Iceberg Pokemon,"['Own Tempo', 'Ice Body', 'Sturdy']",2,505,Ice,None,514,95,117,184,44,46,28,1,1,1,1,1,2,2,1,1,1,1,0.5,1,1,1,2,2,1,55,"5,140",70,0,0,0
@@ -853,9 +853,9 @@ pokedex_number,name,generation,classfication,abilities,height_m,weight_kg,type1,
 742,Cutiefly,7,Bee Fly Pokemon,"['Honey Gather', 'Shield Dust', 'Sweet Veil']",0.1,0.2,Bug,Fairy,304,40,45,40,55,40,84,0.5,0.5,0,1,1,0.25,2,2,1,0.5,0.5,1,1,2,1,2,2,1,190,"5,140",70,0,0,0
 743,Ribombee,7,Bee Fly Pokemon,"['Honey Gather', 'Shield Dust', 'Sweet Veil']",0.2,0.5,Bug,Fairy,464,60,55,60,95,70,124,0.5,0.5,0,1,1,0.25,2,2,1,0.5,0.5,1,1,2,1,2,2,1,75,"5,140",70,0,0,0
 744,Rockruff,7,Puppy Pokemon,"['Keen Eye', 'Vital Spirit', 'Steadfast']",0.5,9.2,Rock,None,280,45,65,40,30,40,60,1,1,1,1,1,2,0.5,0.5,1,2,2,1,0.5,0.5,1,1,2,2,190,"3,855",70,0,0,0
-745, Lycanroc Midday Form,7,Wolf Pokemon,"['Keen Eye', 'Sand Rush', 'Steadfast']",0.8,25,Rock,None,487,75,115,65,55,65,112,1,1,1,1,1,2,0.5,0.5,1,2,2,1,0.5,0.5,1,1,2,2,90,"3,855",70,0,0,0
-745, Lycanroc Midnight Form,7,Wolf Pokemon,"['Keen Eye', 'Vital Spirit', 'No Guard']",1.1,25,Rock,None,487,85,115,75,55,75,82,1,1,1,1,1,2,0.5,0.5,1,2,2,1,0.5,0.5,1,1,2,2,90,"3,855",70,0,0,0
-745, Lycanroc Dusk Form,7,Wolf Pokemon,['Tough Claws'],0.8,25,Rock,None,487,75,117,65,55,65,110,1,1,1,1,1,2,0.5,0.5,1,2,2,1,0.5,0.5,1,1,2,2,90,"3,855",70,0,0,0
+745,Lycanroc Midday Form,7,Wolf Pokemon,"['Keen Eye', 'Sand Rush', 'Steadfast']",0.8,25,Rock,None,487,75,115,65,55,65,112,1,1,1,1,1,2,0.5,0.5,1,2,2,1,0.5,0.5,1,1,2,2,90,"3,855",70,0,0,0
+745,Lycanroc Midnight Form,7,Wolf Pokemon,"['Keen Eye', 'Vital Spirit', 'No Guard']",1.1,25,Rock,None,487,85,115,75,55,75,82,1,1,1,1,1,2,0.5,0.5,1,2,2,1,0.5,0.5,1,1,2,2,90,"3,855",70,0,0,0
+745,Lycanroc Dusk Form,7,Wolf Pokemon,['Tough Claws'],0.8,25,Rock,None,487,75,117,65,55,65,110,1,1,1,1,1,2,0.5,0.5,1,2,2,1,0.5,0.5,1,1,2,2,90,"3,855",70,0,0,0
 746,WishiwashiSolo Form,7,Small Fry Pokemon,['Schooling'],0.2,0.3,Water,None,175,45,20,20,25,25,40,1,1,1,2,1,1,0.5,1,1,2,1,0.5,1,1,1,1,0.5,0.5,60,"3,855",70,0,0,0
 746,Wishiwashi School Form,7,Small Fry Pokemon,['Schooling'],8.2,78.6,Water,None,620,45,140,130,140,135,30,1,1,1,2,1,1,0.5,1,1,2,1,0.5,1,1,1,1,0.5,0.5,60,"3,855",70,0,0,0
 747,Mareanie,7,Brutal Star Pokemon,"['Merciless', 'Limber', 'Regenerator']",0.4,8,Poison,Water,305,50,53,62,43,52,45,0.5,1,1,2,0.5,0.5,0.5,1,1,1,2,0.5,1,0.5,2,1,0.5,0.5,190,"5,140",70,0,0,0
