@@ -1272,6 +1272,113 @@ Au vu de ces proportions, on peut conclure que l'Amérique du Nord représente l
 
 On observe tout de même certaines exceptions. Pour les jeux **Pokémon Noir & Blanc**, **l'Europe** affiche ses pires score avec **21 et 22 %**, au profit du **Japon**, qui atteint ses meilleurs scores avec **37 et 38 %**.
 
+## X. Comparaison entre prix de vente d'une carte et popularité d'un Pokémon, en fonction de leur génération
 
+***Objectif du graphique :***
+Ici, nous allons répondre à deux questions : 
+- **La génération d'un Pokémon influe-t-elle sur le prix de ses cartes Pokémon ?**
+- **Y a-t-il une corrélation entre popularité d'une génération et le prix de ses cartes ?**
+
+Pour réaliser ce graphique, nous avons combiné plusieurs jeux de données :
+- **Pokémon Trading Cards** : noms des cartes et leur prix
+- **Sondage de popularité** : popularité des Pokémon
+- **The complete pokemon dataset** : générations auxquelles appartiennent les Pokémons
+Il faut noter que les cartes Pokémon qui ne concernent pas des Pokémon (cartes Dresseur, cartes Objet, etc.) ne sont pas prises en compte dans cette visualisation.
+
+***Code et Visualisation***
+```{r}
+# importation des bibliothèques
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(stringr)
+
+# lecture du dataset
+trading_cards <- read_csv("data/pokemon_trading_cards.csv")
+pokemon_data <- read_csv("data/Pokemon_data.csv")
+popularity <- tibble(read.table("data/popularity.txt", header = TRUE, sep = ","))
+
+# Correction des noms des Pokémon (upper case => title case)
+trading_cards_titled <- trading_cards %>% mutate(Pokemon=str_to_title(Pokemon))
+# Renommer une colonne (clarté)
+trading_cards_titled <- trading_cards_titled %>% rename(tcg_generation= Generation)
+# Renommer une colonne pour le join
+pokemon_data <- pokemon_data %>% rename(Pokemon = name)
+# Sélection des colonnes utiles
+pokemon_data <- pokemon_data %>% select(Pokemon, generation, type1, type2)
+# Correction diverses de noms
+trading_cards_titled <- trading_cards_titled %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Galarian ', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Alolan ', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Prism Star', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Legend', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Shining ', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Gold', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Lv.x', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Vmax', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Gx', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Ex', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' V', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, '-', " ")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'White Kyurem', "Kyurem")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Black Kyurem', "Kyurem"))
+
+pokemon_data <- pokemon_data %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Nidorana male', 'Nidoran M')) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Nidorana female', 'Nidoran F')) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Aegislash Blade Forme', 'Aegislash')) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Altered Forme Giratina', 'Giratina')) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Shaymin Land Forme', 'Shaymin')) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Lycanroc Midday Form', 'Lycanroc'))
+
+popularity <- popularity %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Farfetchd', "Farfetch'd")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Mr-Mime', "Mr. Mime")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Mime-Jr', "Mime Jr.")) %>%
+  mutate(Pokemon = str_replace(Pokemon, '-', " "))
+
+# Fusion des datasets
+df_intermediate <- inner_join(trading_cards_titled, pokemon_data)
+df <- inner_join(df_intermediate, popularity)
+
+# Agrégation des données : regroupement par génération
+by_gen <- df %>% group_by(generation)
+stats <- by_gen %>% summarize(
+  price = mean(`Price (Pound)`),
+  popularity = mean(Rank),
+  votes = mean(Number.of.votes)
+)
+
+# Affichage du graphique
+ggplot(stats) +
+  geom_col(aes(x = factor(generation), y = price), fill="steelblue" ) +
+  geom_text(aes(x = factor(generation), y = price, 
+                label = price %>% 
+                  round(digits=2) %>%
+                  str_c("£")),
+                  position = position_stack(vjust = .43),
+            colour = "navy") +
+  geom_line(aes(x = generation, y = votes*0.05), size=2, colour="orange") +
+  labs(title = "Prix moyen des cartes Pokémon en fonction de leur génération",
+       subtitle = "Comparaison avec la popularité moyenne des Pokémons par génération", 
+       y = "Prix moyen (£)") +
+  scale_y_continuous(sec.axis=sec_axis(~ .*50, name="Popularité (nombre moyen de votes reçus)") ) +
+  scale_x_discrete("Génération", labels = c(
+    "I : Kanto",
+    "II : Johto",
+    "III : Hoenn",
+    "IV : Sinnoh",
+    "V : Unys",
+    "VI : Kalos",
+    "VII : Alola"
+  )) +
+  theme(
+    axis.title.y = element_text(colour="navy"),
+    axis.title.y.right = element_text(colour="orange"))
+```
+
+***Analyse :***
+Tout d'abord, nous observons que la génération d'un Pokémon semble bien influer le prix des cartes. Les prix suivent une tendance décroissante de la première génération jusqu'à la sixième, puis remontent à la septième. Deux générations ressortent particulièrement : la première et la deuxième, qui ont des prix de vente moyens significativement plus élevés. Cela peut s'expliquer par le fait que les cartes les plus chères (Dracaufeu, Typhlosion, Raichu, Celebi, Mew, Nostenfer) appartiennent à ces deux générations. 
+Lorsque l'on compare avec la courbe de la popularité moyenne des Pokémons, on observe effectivement une corrélation. Les deux graphes suivent tous les deux une tendance décroissante, avec la popularité qui suit une tendance plus linéaire. Bien que le critère majeur du prix de vente d'une carte à collectionner soit sa rareté, il est possible que la popularité du Pokémon de la carte influe également. Une hypothèse probable est qu'il s'agit de la génération qui créé cette tendance : plus une carte est ancienne (et donc d'une génération ancienne) et plus elle est rare. De la même manière, un biais de nostalgie peut influer sur l'opinion des personnes et sur le choix de leur Pokémon préféré dans un sondage de popularité.
 
 # III. Conclusion
