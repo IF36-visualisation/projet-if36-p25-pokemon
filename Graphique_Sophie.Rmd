@@ -1,8 +1,14 @@
 ---
 title: "graphique_sophie"
-output: html_document
 date: "2025-04-23"
+output: 
+  prettydoc::html_pretty:
+    theme: architect
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, results = 'hide', warning = FALSE)
+```
 
 # Comparaison des base stats des Pokémons légendaires et des Pokémons normaux
 
@@ -23,14 +29,10 @@ Enfin, nous affichons l'histogramme du total de base stats, en différenciant le
 library(ggplot2)
 library(dplyr)
 library(readr)
-```
 
-```{r}
 # ouverture du dataset
-df = read_csv("Pokemon_data.csv")
-```
+df = read_csv("data/Pokemon_data.csv")
 
-```{r}
 # création d'une nouvelle colonne "group", possédant comme valeur "legendary" si le pokémon est légendaire, etc. (et "regular" si le pokémon n'est pas spécial)
 df <- df %>% mutate(group = case_when(
   (is_legendary == TRUE & is_mega ==TRUE) ~ "Mega Legendary",
@@ -39,9 +41,7 @@ df <- df %>% mutate(group = case_when(
   is_mega == TRUE ~ "Mega",
   TRUE ~ "Regular"
 ))
-```
 
-```{r}
 # affichage de l'histogramme
 ggplot(df, aes(base_total)) +
   geom_histogram(bins=80, aes(fill = group))  +
@@ -62,4 +62,143 @@ De plus, les Pokémons les plus "puissants", possédant le montant le plus élev
 Il existe tout de même quelques cas de Pokémons spéciaux avec des statistiques moyennes voire faibles. On peut penser à Cosmog (200 de base stats), qui est un cas particulier parmi les Pokémons légendaires car il peut évoluer : sa dernière évolution, Solgaleo, possède lui 680 de base stats. 
 
 
+# Corrélation entre prix des cartes Pokémon et leur génération
 
+
+***Objectif du graphique :***
+Ici, nous allons répondre à deux questions : 
+- **La génération d'un Pokémon influe-t-elle sur le prix de ses cartes Pokémon ?**
+- **Y a-t-il une corrélation entre popularité d'une génération et le prix de ses cartes ?**
+
+Pour réaliser ce graphique, nous avons combiné plusieurs jeux de données :
+- **Pokémon Trading Cards** : noms des cartes et leur prix
+- **Sondage de popularité** : popularité des Pokémon
+- **The complete pokemon dataset** : générations auxquelles appartiennent les Pokémons
+Il faut noter que les cartes Pokémon qui ne concernent pas des Pokémon (cartes Dresseur, cartes Objet, etc.) ne sont pas prises en compte dans cette visualisation.
+
+***Code et Visualisation***
+```{r}
+# importation des bibliothèques
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(stringr)
+
+# lecture du dataset
+trading_cards <- read_csv("data/pokemon_trading_cards.csv")
+pokemon_data <- read_csv("data/Pokemon_data.csv")
+popularity <- tibble(read.table("data/popularity.txt", header = TRUE, sep = ","))
+
+# Correction des noms des Pokémon (upper case => title case)
+trading_cards_titled <- trading_cards %>% mutate(Pokemon=str_to_title(Pokemon))
+# Renommer une colonne (clarté)
+trading_cards_titled <- trading_cards_titled %>% rename(tcg_generation= Generation)
+# Renommer une colonne pour le join
+pokemon_data <- pokemon_data %>% rename(Pokemon = name)
+# Sélection des colonnes utiles
+pokemon_data <- pokemon_data %>% select(Pokemon, generation, type1, type2)
+# Correction diverses de noms
+trading_cards_titled <- trading_cards_titled %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Galarian ', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Alolan ', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Prism Star', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Legend', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Shining ', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Gold', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Lv.x', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Vmax', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Gx', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' Ex', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, ' V', "")) %>%
+  mutate(Pokemon = str_replace(Pokemon, '-', " ")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'White Kyurem', "Kyurem")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Black Kyurem', "Kyurem"))
+
+pokemon_data <- pokemon_data %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Nidorana male', 'Nidoran M')) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Nidorana female', 'Nidoran F')) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Aegislash Blade Forme', 'Aegislash')) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Altered Forme Giratina', 'Giratina')) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Shaymin Land Forme', 'Shaymin')) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Lycanroc Midday Form', 'Lycanroc'))
+
+popularity <- popularity %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Farfetchd', "Farfetch'd")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Mr-Mime', "Mr. Mime")) %>%
+  mutate(Pokemon = str_replace(Pokemon, 'Mime-Jr', "Mime Jr.")) %>%
+  mutate(Pokemon = str_replace(Pokemon, '-', " "))
+
+# Fusion des datasets
+df_intermediate <- inner_join(trading_cards_titled, pokemon_data)
+df <- inner_join(df_intermediate, popularity)
+
+# agrégation des données : regroupement par génération
+by_gen <- df %>% group_by(generation)
+stats <- by_gen %>% summarize(
+  price = mean(`Price (Pound)`),
+  popularity = mean(Rank),
+  votes = mean(Number.of.votes)
+)
+
+# fonction pour inverser l'axe y (affichage par rang)
+reverse_scale <- function(x) {
+  max(x) + min(x) - x
+}
+```
+```{r}
+# graphe en fonction du rang de popularité
+ggplot(stats) +
+  geom_col(aes(x = factor(generation), y = price), fill="steelblue") +
+  geom_text(aes(x = factor(generation), y = price, 
+                label = price %>% 
+                  round(digits=2) %>%
+                  str_c("£")),
+                  position = position_stack(vjust = .5),
+            colour = "navy") +
+  geom_line(aes(x = generation, y = reverse_scale(popularity*0.01)), size = 2, colour="orange") +
+  labs(title = "Prix moyen des cartes Pokémon en fonction de leur génération",
+       subtitle = "Comparaison avec la popularité moyenne des Pokémons par génération",
+      y = "Prix moyen (£)") +
+  scale_y_continuous(sec.axis=sec_axis(~ reverse_scale(.*100), name="Popularité (rang moyen)")) +
+  scale_x_discrete("Génération", labels = c(
+    `1` = "I : Kanto",
+    `2` = "II : Johto",
+    `3` = "III : Hoenn",
+    `4` = "IV : Sinnoh",
+    `5` = "V : Unys",
+    `6` = "VI : Kalos",
+    `7` = "VII : Alola"
+  ))+
+  theme(
+    axis.title.y = element_text(colour="navy"),
+    axis.title.y.right = element_text(colour="orange"))
+```
+
+```{r}
+# graphe en fonction du nombre de votes pour la popularité
+ggplot(stats) +
+  geom_col(aes(x = factor(generation), y = price), fill="steelblue" ) +
+  geom_text(aes(x = factor(generation), y = price, 
+                label = price %>% 
+                  round(digits=2) %>%
+                  str_c("£")),
+                  position = position_stack(vjust = .43),
+            colour = "navy") +
+  geom_line(aes(x = generation, y = votes*0.05), size=2, colour="orange") +
+  labs(title = "Prix moyen des cartes Pokémon en fonction de leur génération",
+       subtitle = "Comparaison avec la popularité moyenne des Pokémons par génération", 
+       y = "Prix moyen (£)") +
+  scale_y_continuous(sec.axis=sec_axis(~ .*50, name="Popularité (nombre moyen de votes reçus)") ) +
+  scale_x_discrete("Génération", labels = c(
+    "I : Kanto",
+    "II : Johto",
+    "III : Hoenn",
+    "IV : Sinnoh",
+    "V : Unys",
+    "VI : Kalos",
+    "VII : Alola"
+  )) +
+  theme(
+    axis.title.y = element_text(colour="navy"),
+    axis.title.y.right = element_text(colour="orange"))
+```
