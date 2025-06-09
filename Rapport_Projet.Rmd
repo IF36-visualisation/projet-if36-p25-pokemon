@@ -1276,13 +1276,16 @@ On observe tout de même certaines exceptions. Pour les jeux **Pokémon Noir & B
 
 ***Objectif du graphique :***
 Ici, nous allons répondre à deux questions : 
+
 - **La génération d'un Pokémon influe-t-elle sur le prix de ses cartes Pokémon ?**
 - **Y a-t-il une corrélation entre popularité d'une génération et le prix de ses cartes ?**
 
 Pour réaliser ce graphique, nous avons combiné plusieurs jeux de données :
+
 - **Pokémon Trading Cards** : noms des cartes et leur prix
 - **Sondage de popularité** : popularité des Pokémon
 - **The complete pokemon dataset** : générations auxquelles appartiennent les Pokémons
+
 Il faut noter que les cartes Pokémon qui ne concernent pas des Pokémon (cartes Dresseur, cartes Objet, etc.) ne sont pas prises en compte dans cette visualisation.
 
 ***Code et Visualisation***
@@ -1306,7 +1309,7 @@ trading_cards_titled <- trading_cards_titled %>% rename(tcg_generation= Generati
 pokemon_data <- pokemon_data %>% rename(Pokemon = name)
 # Sélection des colonnes utiles
 pokemon_data <- pokemon_data %>% select(Pokemon, generation, type1, type2)
-# Correction diverses de noms
+# Cleaning / correction diverses de noms (compatibilité entre les datasets pour le join)
 trading_cards_titled <- trading_cards_titled %>%
   mutate(Pokemon = str_replace(Pokemon, 'Galarian ', "")) %>%
   mutate(Pokemon = str_replace(Pokemon, 'Alolan ', "")) %>%
@@ -1378,6 +1381,7 @@ ggplot(stats) +
 ```
 
 ***Analyse :***
+
 Tout d'abord, nous observons que la génération d'un Pokémon semble bien influer le prix des cartes. Les prix suivent une tendance décroissante de la première génération jusqu'à la sixième, puis remontent à la septième. Deux générations ressortent particulièrement : la première et la deuxième, qui ont des prix de vente moyens significativement plus élevés. Cela peut s'expliquer par le fait que les cartes les plus chères (Dracaufeu, Typhlosion, Raichu, Celebi, Mew, Nostenfer) appartiennent à ces deux générations. 
 Lorsque l'on compare avec la courbe de la popularité moyenne des Pokémons, on observe effectivement une corrélation. Les deux graphes suivent tous les deux une tendance décroissante, avec la popularité qui suit une tendance plus linéaire. Bien que le critère majeur du prix de vente d'une carte à collectionner soit sa rareté, il est possible que la popularité du Pokémon de la carte influe également. Une hypothèse probable est qu'il s'agit de la génération qui créé cette tendance : plus une carte est ancienne (et donc d'une génération ancienne) et plus elle est rare. De la même manière, un biais de nostalgie peut influer sur l'opinion des personnes et sur le choix de leur Pokémon préféré dans un sondage de popularité.
 
