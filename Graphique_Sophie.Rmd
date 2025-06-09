@@ -205,3 +205,69 @@ ggplot(stats) +
 ***Analyse :***
 Tout d'abord, nous observons que la génération d'un Pokémon semble bien influer le prix des cartes. Les prix suivent une tendance décroissante de la première génération jusqu'à la sixième, puis remontent à la septième. Deux générations ressortent particulièrement : la première et la deuxième, qui ont des prix de vente moyens significativement plus élevés. Cela peut s'expliquer par le fait que les cartes les plus chères (Dracaufeu, Typhlosion, Raichu, Celebi, Mew, Nostenfer) appartiennent à ces deux générations. 
 Lorsque l'on compare avec la courbe de la popularité moyenne des Pokémons, on observe effectivement une corrélation. Les deux graphes suivent tous les deux une tendance décroissante, avec la popularité qui suit une tendance plus linéaire. Bien que le critère majeur du prix de vente d'une carte à collectionner soit sa rareté, il est possible que la popularité du Pokémon de la carte influe également. Une hypothèse probable est qu'il s'agit de la génération qui créé cette tendance : plus une carte est ancienne (et donc d'une génération ancienne) et plus elle est rare. De la même manière, un biais de nostalgie peut influer sur l'opinion des personnes et sur le choix de leur Pokémon préféré dans un sondage de popularité.
+
+# Graphique taille / poids / vitesse / base stats
+
+```{r, fig.height=6, fig.width=9}
+# importation des bibliothèques
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+# Lecture du dataset
+df <- read_csv("data/Pokemon_data.csv")
+
+# filtrer les outliers du dataframe pour une meilleure lisibilité
+df <- df %>% 
+  filter(weight_kg < 355) %>% 
+  filter(height_m < 3) %>% # 3 ou 2.5 
+  filter (speed < 135) %>% 
+  filter (base_total < 660)
+
+# Affichage du graphique
+ggplot(df) +
+  geom_jitter(aes(x = weight_kg, y = height_m, colour = base_total, size=speed), alpha=1) +
+  scale_size(range = c(0.1, 6), trans = 'reverse') +
+  scale_colour_gradientn(colours = RColorBrewer::brewer.pal(10, "Purples")) +
+  labs(
+    title = "Taille des Pokémon en fonction de leur poids",
+    subtitle = "Ainsi que de leur base stats et de leur vitesse",
+    x = "Poids (kg)",
+    y = "Taille (m)",
+    colour = "Total des `\nbase stats",
+    size = "Vitesse"
+  )
+```
+
+
+# Graphique jeux principaux / spin-off
+
+```{r}
+# importation des bibliothèques
+library(ggplot2)
+library(dplyr)
+library(readr)
+library(stringr)
+library(forcats)
+
+# importation du dataset
+df <- read_csv("data/vgsales.csv")
+# filtrage pour avoir les jeux Pokémon
+pokemon_games <- df %>% 
+  filter(str_detect(Name, "Pokemon"))
+
+pokemon_games <- pokemon_games %>%
+  mutate(Name = fct_reorder(Name, Year))
+
+# séparation entre jeux principaux et spin-off : tous les jeux principaux sont dans le top 100 (et aucun spin-off ne l'est)
+pokemon_games <- pokemon_games %>% mutate(main_game = Rank < 100)
+
+# visualisation
+ggplot(pokemon_games, aes(x = Year, y = Global_Sales, fill = main_game)) +
+  geom_bar(stat="identity") + 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+  
+
+```
