@@ -8,16 +8,27 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Tournois", tabName = "tournois", icon = icon("chart-line")),
-      menuItem("Carte", tabName = "carte")
+      menuItem("Aide au combats de cartes", tabName = "aide_combats",  icon = icon("hand-fist"))
     ),
-    sliderInput("nb_decks", "Nombre de decks :", min = 20, max = 100, value = 70)
+    sliderInput("nb_decks", "Nombre de decks :", min = 20, max = 100, value = 70),
+    checkboxGroupInput(
+      inputId = "filtre_generation",
+      label = "Sélectionnez les générations à inclure :",
+      choices = c(1, 2, 3, 4, 5, 6, 7, 8),
+      selected = c(1, 2, 3, 4, 5, 6, 7, 8)
+    )
   ),
   dashboardBody(
     
     tabItems(
       
-      tabItem(tabName = "carte",
-    
+      tabItem(tabName = "aide_combats",
+              fluidRow(
+                box(
+                  width = 12,
+                  plotlyOutput("heatmap", height = "500px")
+                )
+              )
               
       ),
       

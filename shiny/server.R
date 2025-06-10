@@ -5,9 +5,85 @@ library(plotly)
 library(ggplot2)
 
 df_raw <- read_csv("data/tournaments.csv")
+df_general <- read.csv("data/Pokemon_data.csv", sep = ",")
+
+
 
 server <- function(input, output) {
-  
+  aide_combats <- reactive({
+    df <- df_general %>%
+      select(generation, name, type1, against_bug, against_dark, against_dragon,
+             against_electric, against_fairy, against_fighting, against_fire,
+             against_flying, against_ghost, against_grass, against_ground,
+             against_ice, against_normal, against_poison, against_psychic,
+             against_rock, against_steel, against_water)
+
+    #On filtre les types selon les générations sélectionnées
+    df <- df %>%
+      filter(generation %in% req(input$filtre_generation)) %>%
+      select(-generation)
+
+    #On calcule la moyenne des coefficients "against" par type
+    mean_against_by_type <- df %>%
+      group_by(type1) %>%
+      summarise(
+        mean_against_bug = mean(against_bug, na.rm = TRUE),
+        mean_against_dark = mean(against_dark, na.rm = TRUE),
+        mean_against_dragon = mean(against_dragon, na.rm = TRUE),
+        mean_against_electric = mean(against_electric, na.rm = TRUE),
+        mean_against_fairy = mean(against_fairy, na.rm = TRUE),
+        mean_against_fighting = mean(against_fighting, na.rm = TRUE),
+        mean_against_fire = mean(against_fire, na.rm = TRUE),
+        mean_against_flying = mean(against_flying, na.rm = TRUE),
+        mean_against_ghost = mean(against_ghost, na.rm = TRUE),
+        mean_against_grass = mean(against_grass, na.rm = TRUE),
+        mean_against_ground = mean(against_ground, na.rm = TRUE),
+        mean_against_ice = mean(against_ice, na.rm = TRUE),
+        mean_against_normal = mean(against_normal, na.rm = TRUE),
+        mean_against_poison = mean(against_poison, na.rm = TRUE),
+        mean_against_psychic = mean(against_psychic, na.rm = TRUE),
+        mean_against_rock = mean(against_rock, na.rm = TRUE),
+        mean_against_steel = mean(against_steel, na.rm = TRUE),
+        mean_against_water = mean(against_water, na.rm = TRUE)
+      )
+
+    # Transformation des données pour la heatmap
+    heatmap_data <- mean_against_by_type %>%
+      pivot_longer(
+        cols = starts_with("mean_against"),
+        names_to = "against_type",
+        values_to = "mean_value"
+      ) %>%
+      mutate(against_type = gsub("mean_against_", "", against_type))
+    
+    return(heatmap_data)
+
+  })
+
+  output$heatmap <- renderPlotly({
+    data <- aide_combats()
+    ggplot(data, aes(x = type1, y = against_type, fill = mean_value)) +
+      geom_tile(color = "white") +
+      geom_text(aes(label = round(mean_value, 2)), color = "black", size = 3) + # Ajout des labels
+      scale_fill_gradient2(
+        low = "blue",    # Couleur pour les valeurs basses (proche de 0)
+        mid = "white",   # Couleur neutre pour la valeur 1
+        high = "red",    # Couleur pour les valeurs hautes (proche de 2)
+        midpoint = 1,    # Point central du dégradé
+        name = "Moyenne" # Légende de l'échelle
+      ) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    labs(
+      title = "Heatmap des moyennes des coefficients de dégâts infligés par type d'attaque pour chaque type principal du pokémon adverse",
+      x = "Type principal du Pokémon attaqué",
+      y = "Type de l'attaque"
+    )  
+
+  })
+
+
+  #-----------------------------------------------------------------------------------------
   deck_analysis <- reactive({
     nb_decks <- input$nb_decks
     
