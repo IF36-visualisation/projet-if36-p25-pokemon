@@ -66,14 +66,18 @@ Il existe tout de même quelques cas de Pokémons spéciaux avec des statistique
 
 
 ***Objectif du graphique :***
+
 Ici, nous allons répondre à deux questions : 
+
 - **La génération d'un Pokémon influe-t-elle sur le prix de ses cartes Pokémon ?**
 - **Y a-t-il une corrélation entre popularité d'une génération et le prix de ses cartes ?**
 
 Pour réaliser ce graphique, nous avons combiné plusieurs jeux de données :
+
 - **Pokémon Trading Cards** : noms des cartes et leur prix
 - **Sondage de popularité** : popularité des Pokémon
 - **The complete pokemon dataset** : générations auxquelles appartiennent les Pokémons
+
 Il faut noter que les cartes Pokémon qui ne concernent pas des Pokémon (cartes Dresseur, cartes Objet, etc.) ne sont pas prises en compte dans cette visualisation.
 
 ***Code et Visualisation***
@@ -203,10 +207,22 @@ ggplot(stats) +
     axis.title.y.right = element_text(colour="orange"))
 ```
 ***Analyse :***
+
 Tout d'abord, nous observons que la génération d'un Pokémon semble bien influer le prix des cartes. Les prix suivent une tendance décroissante de la première génération jusqu'à la sixième, puis remontent à la septième. Deux générations ressortent particulièrement : la première et la deuxième, qui ont des prix de vente moyens significativement plus élevés. Cela peut s'expliquer par le fait que les cartes les plus chères (Dracaufeu, Typhlosion, Raichu, Celebi, Mew, Nostenfer) appartiennent à ces deux générations. 
 Lorsque l'on compare avec la courbe de la popularité moyenne des Pokémons, on observe effectivement une corrélation. Les deux graphes suivent tous les deux une tendance décroissante, avec la popularité qui suit une tendance plus linéaire. Bien que le critère majeur du prix de vente d'une carte à collectionner soit sa rareté, il est possible que la popularité du Pokémon de la carte influe également. Une hypothèse probable est qu'il s'agit de la génération qui créé cette tendance : plus une carte est ancienne (et donc d'une génération ancienne) et plus elle est rare. De la même manière, un biais de nostalgie peut influer sur l'opinion des personnes et sur le choix de leur Pokémon préféré dans un sondage de popularité.
 
-# Graphique taille / poids / vitesse / base stats
+# Visualisation de la taille des Pokémon en fonction de leur poids, ainsi que de leur vitesse et du total de leurs statistiques de base
+
+***Objectif du graphique :***
+
+Ici, nous allons répondre à la question suivante : **Observe-t-on une relation entre le poids, la taille, la vitesse et le totale des statistiques de base d'un Pokémon ?**
+
+
+Pour réaliser ce graphique, nous avons utilisé le jeu de données **The complete pokemon dataset**.
+
+Pour des raisons de lisibilité du graphique, nous avons dû ignorer certaines valeurs extrêmes
+
+***Code et Visualisation***
 
 ```{r, fig.height=6, fig.width=9}
 # importation des bibliothèques
@@ -239,6 +255,15 @@ ggplot(df) +
   )
 ```
 
+***Analyse :***
+
+Tout d'abord, nous n'observons pas de relation particulière entre la taille et le poids d'une Pokémon. Au niveau de la distribution, il semble y avoir plus de Pokémon légers (< 100kg) et d'une taille moyenne ou petits (< 2m). Il n'y a quasiment pas de Pokémon à la fois petit (< 1m) et lourd (> 150kg).
+
+Nous n'observons pas de lien flagrant entre la vitesse et la taille / poids d'un Pokémon non plus.  Contrairement à ce que l'on pourrait croire, la majorité des Pokémon légers (< 50kg) et petits (< 1m) sont lents. Les Pokémon rapides semblent plus être de taille moyenne ou grande (> 1m).
+
+Quant au total des statistiques de base (base stats), on observe une tendance assez claire : les Pokémon petits (< 1m) ont des base stats plus faibles que les Pokémon de taille moyenne et grands. 
+
+La taille semble donc avoir plus de lien avec les statistiques des Pokémon que le poids. 
 
 # Graphique jeux principaux / spin-off
 

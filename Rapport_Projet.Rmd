@@ -463,8 +463,11 @@ ggplot(df, aes(base_total)) +
 ***Analyse :***
 
 On peut observer que les Pokémons légendaires, fabuleux et méga-évolués possèdent bien un total de statistiques plus élevé que les Pokémons normaux. Ils constituent la quasi majorité de tous les Pokémons ayant 580 ou plus de base stats. 
+
 On observe également que la plupart des Pokémons spéciaux ont le même montant de base stats : 600, 580 ou 680. 
-De plus, les Pokémons les plus "puissants", possédant le montant le plus élevé de base stats font partie d'un groupe rare : ils sont à la fois des méga-évolutions et des Pokémons légendaires (Mega Mewtwo X, Mega Mewtwo Y et méga Rayquaza). 
+
+De plus, les Pokémons les plus "puissants", possédant le montant le plus élevé de base stats font partie d'un groupe rare : ils sont à la fois des méga-évolutions et des Pokémons légendaires (Méga Mewtwo X, Méga Mewtwo Y et Méga Rayquaza). 
+
 Il existe tout de même quelques cas de Pokémons spéciaux avec des statistiques moyennes voire faibles. On peut penser à Cosmog (200 de base stats), qui est un cas particulier parmi les Pokémons légendaires car il peut évoluer : sa dernière évolution, Solgaleo, possède lui 680 de base stats. 
 
 # X. Statistiques des pokémons selon leur niveau d'évolution
@@ -1380,9 +1383,65 @@ ggplot(stats) +
     axis.title.y.right = element_text(colour="orange"))
 ```
 
+
 ***Analyse :***
 
 Tout d'abord, nous observons que la génération d'un Pokémon semble bien influer le prix des cartes. Les prix suivent une tendance décroissante de la première génération jusqu'à la sixième, puis remontent à la septième. Deux générations ressortent particulièrement : la première et la deuxième, qui ont des prix de vente moyens significativement plus élevés. Cela peut s'expliquer par le fait que les cartes les plus chères (Dracaufeu, Typhlosion, Raichu, Celebi, Mew, Nostenfer) appartiennent à ces deux générations. 
+
 Lorsque l'on compare avec la courbe de la popularité moyenne des Pokémons, on observe effectivement une corrélation. Les deux graphes suivent tous les deux une tendance décroissante, avec la popularité qui suit une tendance plus linéaire. Bien que le critère majeur du prix de vente d'une carte à collectionner soit sa rareté, il est possible que la popularité du Pokémon de la carte influe également. Une hypothèse probable est qu'il s'agit de la génération qui créé cette tendance : plus une carte est ancienne (et donc d'une génération ancienne) et plus elle est rare. De la même manière, un biais de nostalgie peut influer sur l'opinion des personnes et sur le choix de leur Pokémon préféré dans un sondage de popularité.
+
+## Visualisation de la taille des Pokémon en fonction de leur poids, ainsi que de leur vitesse et du total de leurs statistiques de base
+
+***Objectif du graphique :***
+
+Ici, nous allons répondre à la question suivante : **Observe-t-on une relation entre le poids, la taille, la vitesse et le totale des statistiques de base d'un Pokémon ?**
+
+
+Pour réaliser ce graphique, nous avons utilisé le jeu de données **The complete pokemon dataset**.
+
+Pour des raisons de lisibilité du graphique, nous avons dû ignorer certaines valeurs extrêmes.
+
+***Code et Visualisation***
+
+```{r, fig.height=6, fig.width=9}
+# importation des bibliothèques
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+# Lecture du dataset
+df <- read_csv("data/Pokemon_data.csv")
+
+# filtrer les outliers du dataframe pour une meilleure lisibilité
+df <- df %>% 
+  filter(weight_kg < 355) %>% 
+  filter(height_m < 3) %>% # 3 ou 2.5 
+  filter (speed < 135) %>% 
+  filter (base_total < 660)
+
+# Affichage du graphique
+ggplot(df) +
+  geom_jitter(aes(x = weight_kg, y = height_m, colour = base_total, size=speed), alpha=1) +
+  scale_size(range = c(0.1, 6), trans = 'reverse') +
+  scale_colour_gradientn(colours = RColorBrewer::brewer.pal(10, "Purples")) +
+  labs(
+    title = "Taille des Pokémon en fonction de leur poids",
+    subtitle = "Ainsi que de leur base stats et de leur vitesse",
+    x = "Poids (kg)",
+    y = "Taille (m)",
+    colour = "Total des `\nbase stats",
+    size = "Vitesse"
+  )
+```
+
+***Analyse :***
+
+Tout d'abord, nous n'observons pas de relation particulière entre la taille et le poids d'un Pokémon. Au niveau de la distribution, il semble y avoir plus de Pokémon légers (< 100kg) et d'une taille moyenne ou petits (< 2m). Il n'y a quasiment pas de Pokémon à la fois petit (< 1m) et lourd (> 150kg).
+
+Nous n'observons pas de lien flagrant entre la vitesse et la taille / poids d'un Pokémon non plus.  Contrairement à ce que l'on pourrait croire, la majorité des Pokémon légers (< 50kg) et petits (< 1m) sont lents. Les Pokémon rapides semblent plus être de taille moyenne ou grande (> 1m).
+
+Quant au total des statistiques de base (base stats), on observe une tendance assez claire : les Pokémon petits (< 1m) ont des base stats plus faibles que les Pokémon de taille moyenne et grands. 
+
+La taille semble donc avoir plus de lien avec les statistiques des Pokémon que le poids.
 
 # III. Conclusion
