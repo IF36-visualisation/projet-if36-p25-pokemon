@@ -914,10 +914,6 @@ r2_loess_mean <- 1 - (ss_res_mean / ss_tot_mean)
 ggplot(top10_df, aes(x = as.factor(rank_price_deck), y = ranking_player_tournament, fill = as.numeric(rank_price_deck))) +
   geom_boxplot(color = "black", outlier.size = 0.8, alpha = 0.9) +
   
-  #geom_line(data = mean_no_outliers_df,
-  #aes(x = rank_price_deck, y = mean_no_outliers, group = 1),
-  #color = "darkorange", size = 1.2) +
-  
   geom_line(data = diag_df,
             aes(x = rank_price_deck, y = ranking_player_tournament, group = 1,
                 color = "Référence y = x"), linetype = "solid", size = 1.5) +
