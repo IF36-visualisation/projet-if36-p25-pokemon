@@ -3,10 +3,12 @@ library(dplyr)
 library(readr)
 library(plotly)
 library(ggplot2)
+library(tidyr)
+library(ggimage)
 
-df_raw <- read_csv("../data/tournaments.csv")
-df_general <- read.csv("../data/Pokemon_data.csv", sep = ",")
-df_popularity <- tibble(read.table("../data/popularity.txt", header = TRUE, sep = ","))
+df_raw <- read_csv("data/tournaments.csv")
+df_general <- read.csv("data/Pokemon_data.csv", sep = ",")
+df_popularity <- tibble(read.table("data/popularity.txt", header = TRUE, sep = ","))
 
 
 
@@ -268,7 +270,7 @@ server <- function(input, output) {
           select(type1, Pokemon, Number.of.votes), 
         by = "type1"
       ) %>%
-      mutate(img_path = paste0("../data/images/", tolower(Pokemon), ".png"))
+      mutate(img_path = paste0("data/images/", tolower(Pokemon), ".png"))
     
     # Define colors of each type for graphical purpose
     type_colors <-c(
