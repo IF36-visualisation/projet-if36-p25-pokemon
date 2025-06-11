@@ -12,12 +12,17 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, results = 'hide', warning =
 
 # I. Introduction
 
-Ce projet, réalisé dans le cadre d'IF36, a pour objectif d'analyser plusieurs sources de données afin d'extraire des informations et des visualisations pertinentes autour de la licence **Pokémon**.  
-Au travers de différents graphiques, nous allons répondre à des questionnements portant à la fois sur :
+Depuis son lancement en 1996, Pokémon est devenu un phénomène mondial incontournable. Créé par Nintendo, Game Freak et Creatures, cet univers captivant s’est décliné sous de nombreuses formes : jeux vidéo, cartes à collectionner, séries animées, films, et bien plus encore. Avec plus de 1000 créatures différentes et des millions de fans à travers le monde, Pokémon est riche d’une immense quantité de données, allant des statistiques de combat aux types élémentaires, en passant par l’évolution des jeux et la popularité des cartes.
 
-- Les jeux vidéos **Pokémons**
-- Le jeu de cartes à collectionner **Pokémon**
-- Les **Pokémons** en général (statistiques, popularité, ...)
+Dans le cadre de notre projet en IF36, nous avons choisi d’explorer cet univers sous un angle analytique à travers des visualisations de données interactives et informatives. Notre travail s'articule autour de plusieurs axes :
+
+- Les jeux Pokémon : analyse des ventes, popularité, etc...
+- Les cartes à collectionner : aperçu de leur rareté, valeur, etc...
+- Les tournois de cartes Pokémon : prix des decks, pays les plus forts, etc...
+- Les statistiques des Pokémon : étude comparative des forces et faiblesses des différentes créatures
+- Les types de Pokémon : visualisation des répartitions, combinaisons les plus courantes et rapports de forces entre types
+
+Ce projet a pour objectif de rendre accessible et ludique un ensemble de données complexes tout en mettant en lumière les aspects les plus emblématiques de l’univers Pokémon.
 
 ## Sources de données
 
