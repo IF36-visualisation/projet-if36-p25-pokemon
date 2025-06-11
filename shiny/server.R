@@ -4,8 +4,9 @@ library(readr)
 library(plotly)
 library(ggplot2)
 
-df_raw <- read_csv("data/tournaments.csv")
-df_general <- read.csv("data/Pokemon_data.csv", sep = ",")
+df_raw <- read_csv("../data/tournaments.csv")
+df_general <- read.csv("../data/Pokemon_data.csv", sep = ",")
+df_popularity <- tibble(read.table("../data/popularity.txt", header = TRUE, sep = ","))
 
 
 
@@ -231,6 +232,101 @@ server <- function(input, output) {
         yaxis = list(title = "Prix total ($)", tickformat = "$,.0f")
       ) %>%
       config(displayModeBar = TRUE, displaylogo = FALSE)
+  })
+  
+  #--------------------------------------------
+  
+  pok_data_filtered <- reactive({
+    
+    #On filtre les types selon les générations sélectionnées
+    df <- df_general %>%
+      filter(generation %in% req(input$filtre_generation)) %>%
+      select(-generation)
+    
+    return(df)
+    
+  })
+  
+  
+  output$plot_popularity <- renderPlot({
+    
+    merged <- df_popularity %>% left_join(pok_data_filtered() %>% select(name, type1), by = c("Pokemon" = "name"))
+    
+    # Create aggregated data by Pokemon type
+    type_summary <- merged %>%
+      filter(!is.na(type1)) %>%
+      group_by(type1) %>%
+      summarise(TotalVotes = sum(Number.of.votes), Count = n()) %>%
+      mutate(AvgVotes = TotalVotes / Count) %>%
+      arrange(desc(AvgVotes)) %>%
+      left_join(
+        # Select the most popular Pokemon for each type
+        merged %>%
+          filter(!is.na(type1)) %>%
+          group_by(type1) %>%
+          slice_max(Number.of.votes, n = 1) %>%
+          select(type1, Pokemon, Number.of.votes), 
+        by = "type1"
+      ) %>%
+      mutate(img_path = paste0("../data/images/", tolower(Pokemon), ".png"))
+    
+    # Define colors of each type for graphical purpose
+    type_colors <-c(
+      'Normal'= '#A8A77A',
+      'Fire' = '#EE8130',
+      'Water' = '#6390F0',
+      'Electric' = '#F7D02C',
+      'Grass' = '#7AC74C',
+      'Ice' = '#96D9D6',
+      'Fighting' = '#C22E28',
+      'Poison' = '#A33EA1',
+      'Ground' = '#E2BF65',
+      'Flying' = '#A98FF3',
+      'Psychic' = '#F95587',
+      'Bug' = '#A6B91A',
+      'Rock' = '#B6A136',
+      'Ghost' = '#735797',
+      'Dragon' = '#6F35FC',
+      'Dark' = '#705746',
+      'Steel' = '#B7B7CE',
+      'Fairy' = '#D685AD'
+    )
+    
+    # Compute the average number of votes
+    avg_votes <- mean(type_summary$TotalVotes) / sum(type_summary$TotalVotes) * 100
+    
+    # Draw graph
+    p_pop <- type_summary %>%
+      ggplot(aes(x = reorder(type1, -TotalVotes), 
+                 y = TotalVotes / sum(TotalVotes) * 100, 
+                 fill=type1)) +
+      # Colored bars
+      geom_col(show.legend = FALSE) +
+      geom_hline(yintercept = avg_votes, linetype = "dashed", color = "red", linewidth = 1, alpha=.5) +
+      
+      # Black bars
+      geom_col(aes(y = Count / sum(Count) * 100, fill = "Nombre de Pokémons"), alpha = 0.3, width = 0.6) +
+      
+      # Fake invisible layer to create "Nombre de Votes" legend
+      geom_col(aes(y = 0, fill = "Nombre de Votes"), show.legend = TRUE) +
+      
+      scale_fill_manual(
+        name = NULL,
+        values = c(type_colors, "Nombre de Pokémons" = "black", "Nombre de Votes" = "#6390F0"),
+        breaks = c("Nombre de Votes", "Nombre de Pokémons")
+      ) +
+      guides(fill = guide_legend(override.aes = list(alpha = c(1, 0.3)))) +
+      
+      annotate("text", x = 14, y = avg_votes + 1, label = "Popularité moyenne", color = "red", size = 4, hjust = 0) +
+      labs(title = "Popularité des types de Pokemon", subtitle = "Nombre de votes par type", x = "Type", y = "%") +
+      theme_minimal() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = c(0.85, 0.85)) +
+      
+      geom_image(aes(image=img_path, y = TotalVotes / sum(TotalVotes) * 100 + 1), size=.2)
+    
+    print(p_pop)
+    
+    
   })
   
   

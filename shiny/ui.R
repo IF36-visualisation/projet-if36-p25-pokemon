@@ -8,7 +8,8 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       menuItem("Tournois", tabName = "tournois", icon = icon("chart-line")),
-      menuItem("Aide au combats de cartes", tabName = "aide_combats",  icon = icon("hand-fist"))
+      menuItem("Aide au combats de cartes", tabName = "aide_combats",  icon = icon("hand-fist")),
+      menuItem("Popularité", tabName = "popularity",  icon = icon("star"))
     ),
     sliderInput("nb_decks", "Nombre de decks :", min = 20, max = 100, value = 70),
     checkboxGroupInput(
@@ -52,6 +53,16 @@ ui <- dashboardPage(
                   plotlyOutput("plot_prix_deck", height = "500px")
                 )
               )
+      ),
+      
+      tabItem(tabName = "popularity",
+              fluidRow(
+                box(
+                  width = 12,
+                  plotOutput("plot_popularity", height = "500px")
+                )
+              )
+              
       )
   )
 )
