@@ -38,15 +38,15 @@ Ce dataset est un jeu de données agrégé compilant des informations complètes
 
 
 ### 3. Pokémon Trading Cards ([dispo. ici](https://www.kaggle.com/datasets/jacklacey/pokemon-trading-cards))
-Ce dataset pourra être utilisé en complément du précédent. Il permet de relier les cartes du jeu à leur prix de vente. Il contient des données détaillant les cartes Pokémon en vente sur chaoscards.co.uk. 
+Ce dataset pourra être utilisé en complément du précédent. Il permet de relier les cartes du jeu à leur prix de vente. Il contient des données détaillant les cartes Pokémon en vente sur chaoscards.co.uk en 2022.
 
 
 ### 4. Limitless PTCGP All Data ([dispo. ici](https://www.kaggle.com/datasets/updatethisplz/limitless-ptcgp-all-data))
-Ce dataset est similaire au numéro 2, mais se porte sur les cartes virtuelles (du jeu mobile sorti en 2024). Ainsi, il contient des informations sur les cartes des pokémons du jeu TCG Pocket.
+Ce dataset est similaire au numéro 2, mais se porte sur les cartes virtuelles (du jeu mobile sorti en 2024). Ainsi, il contient des informations sur les cartes des pokémons du jeu TCG Pocket. Il est mis à jour très régulièrement.
 
 
 ### 5. Sondage de popularité ([dispo. ici](https://pastebin.com/LvhaTx7w))
-Ce dataset est le seul que nous avons trouvé pour obtenir des informations sur la popularité des pokémons. Il provient d'un sondage fait sur un forum de fans de la license (**52 725** votants).
+Ce dataset est le seul que nous avons trouvé pour obtenir des informations sur la popularité des pokémons. Il provient d'un sondage fait sur un forum de fans de la license (**52 725** votants). Réalisé en 2019, il ne contient donc pas la dernière génération de Pokémons.
 Les données sont également disponibles [ici](https://docs.google.com/spreadsheets/d/1c16Wh4AawHGbTi3Eq1DGZQdM4FMUlJO1YwXJZ_ylRvg/edit?gid=557303698#gid=557303698), où elles sont un peu analysées
 
 
@@ -55,16 +55,18 @@ Ce dataset contient lui aussi des données sur les cartes physiques, mais se con
 
 
 ### 7. Pokemon Image Dataset ([dispo. ici](https://www.kaggle.com/datasets/vishalsubbiah/pokemon-images-and-types))
-Ce dataset contient des photos de pokémon. 
+Ce dataset contient des photos de pokémon. Il contient l'ensemble des Pokémons jusqu'à la dernière version, mis à part certaines formes spéciales (formes de Galar par exemple)
 
 
 ### 8. Video Game Sales ([dispo. ici](https://www.kaggle.com/datasets/gregorut/videogamesales))
-Ce dataset contient une liste des jeux vidéos vendus à plus de 100 000 copies. Il peut nous permettre de lier les ventes des jeux vidéos pokémons, à par exemple, la popularité de certains pokémons.
+Ce dataset contient une liste des jeux vidéos vendus à plus de 100 000 copies (entre 1996 et 2014). Il peut nous permettre de lier les ventes des jeux vidéos pokémons, à par exemple, la popularité de certains pokémons.
 
 
-# II. Graphiques
+# II. Exploration
 
-## X. Visualisation des différents combos de types de Pokémon 
+## Etude des types
+
+### 1.1. Visualisation des différents combos de types de Pokémon 
 
 ***Objectif du graphique :***  
 Ici, nous allons répondre à la question suivante : **Quel est le nombre de Pokémon par combinaison de types ?**
@@ -152,7 +154,7 @@ On peut également remarquer que de nombreux combos n'existent pas, comme par ex
 Malgré tout, on peut remarquer que la plupart des combinaisons sont représentées par la même echelle de couleur, ce qui signifie qu'il n'y a pas de combo de type qui se démarque vraiment des autres (hormis ceux notés au début).  
 
 
-## X. Efficacité  d'un type de Pokémon face à un autre type de Pokémon
+### 1.2. Efficacité  d'un type de Pokémon face à un autre type de Pokémon
 ***Objectif du graphique :***  
 Ici, nous allons répondre à la question suivante : **Face à quel type adverse chaque type d'attaque est-il meilleur ?**
 En effet, chaque pokémon possède un coefficient de dégats subits pour chaque type adverse. Par exemple, si un pokémon a un coéfficent de 2 pour le type Feu, il recevra 2 fois plus de dégats par attaque de type Feu.
@@ -241,7 +243,7 @@ Nous pouvons également observer que certains types de Pokémon sont plus résis
 Ensuite, nous pouvons également observer que certains types de Pokémon sont plus efficaces que d'autres. Par exemple, les Pokémon de type "Dragon" (Dragon) infligent plus de dégats face à la plupart des types adverses, tandis que les Pokémon de type "Fée" (Fairy) infligent moins de dégats face à la plupart des types adverses.
 Enfin, on peut noter que certains types de pokémons sont immunisés face à certains types adverses, comme par exemple les Pokémon de type "Vol" (Flying) face aux attaques de type "Sol" (Ground). Cela peut être très intéressant à prendre en compte lors d'un combat, car cela peut faire la différence entre la victoire et la défaite. 
 
-## X. Popularité des types de Pokémons
+### 1.3. Popularité des types de Pokémons
 
 ***Objectif du graphique :***  
 Ici, nous allons répondre à la question suivante : **Quels sont les types de Pokémon préférés de la communauté ?**
@@ -338,7 +340,7 @@ type_summary %>%
   ) +
   
   annotate("text", x = 14, y = avg_votes + 1, label = "Popularité moyenne", color = "red", size = 4, hjust = 0) +
-  labs(title = "Popularité des types de Pokemon", subtitle = "Nombre de votes par type", x = "Type", y = "%") +
+  labs(title = "Popularité des types de Pokemon", subtitle = "Pourcentage de votes par type", x = "Type", y = "%") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = c(0.85, 0.85)) +
   
@@ -359,7 +361,7 @@ Le grand gagnant de ce sondage apparaît assez clairement : il s'agit du type **
 
 
 
-## X. Répartition des types par génération
+### 1.4. Répartition des types par génération
 
 
 ***Objectif du graphique :***  
@@ -421,8 +423,9 @@ De manière générale, on voit que la répartition des types est assez proche d
 - Le nombre très élevé de Pokémons **Poison** dans la Première Génération
 - La proportion de Pokémons de type **Sol** qui était relativement élevée dans les 5 premières générations alors qu'elle est quasiment nulle dans les 3 dernières générations
 
+## 2. Etude des statistiques des Pokémons
 
-## X. Comparaison des base stats des Pokémons légendaires et des Pokémons normaux
+### 2.1. Comparaison des base stats des Pokémons légendaires et des Pokémons normaux
 
 ***Objectif du graphique :***
 Ici, nous allons répondre à la question suivante : Les Pokémons légdendaires sont-ils les plus forts ?
@@ -475,7 +478,7 @@ De plus, les Pokémons les plus "puissants", possédant le montant le plus élev
 
 Il existe tout de même quelques cas de Pokémons spéciaux avec des statistiques moyennes voire faibles. On peut penser à Cosmog (200 de base stats), qui est un cas particulier parmi les Pokémons légendaires car il peut évoluer : sa dernière évolution, Solgaleo, possède lui 680 de base stats. 
 
-# X. Statistiques des pokémons selon leur niveau d'évolution
+### 2.2. Statistiques des pokémons selon leur niveau d'évolution
 ***Objectif du graphique :***  
 Ici, nous allons répondre à la question suivante : **Quelles sont les statistiques des pokémons selon leur niveau d'évolution ?**
 En effet, chaque niveau d'évolution peut avoir un impact significatif sur les statistiques d'un pokémon, telles que ses points de vie (HP), son attaque, sa défense, etc.
@@ -555,7 +558,63 @@ En effet, les pokémons de niveau d'évolution 1 ont des statistiques plus faibl
 Cela est logique, car les pokémons de niveau d'évolution 3 sont généralement plus puissants que ceux de niveau d'évolution 2, qui eux-mêmes sont plus puissants que ceux de niveau d'évolution 1.
 Nous pouvons également observer que les statistiques des pokémons de niveau d'évolution 1 sont plus homogènes que celles des pokémons de niveau d'évolution 2 et 3. De plus, les statistiques n'évoluent pas toutes de la même manière. Par exemple : la vitesse évolue "peu" entre les niveaux d'évolution, à où l'attaque et la défense évoluent beaucoup plus.
 
-## X. Tournois Pokémons dans le monde
+### 2.3. Taille des Pokémon en fonction de leur poids, ainsi que de leur vitesse et du total de leurs statistiques de base
+
+***Objectif du graphique :***
+
+Ici, nous allons répondre à la question suivante : **Observe-t-on une relation entre le poids, la taille, la vitesse et le totale des statistiques de base d'un Pokémon ?**
+
+
+Pour réaliser ce graphique, nous avons utilisé le jeu de données **The complete pokemon dataset**.
+
+Pour des raisons de lisibilité du graphique, nous avons dû ignorer certaines valeurs extrêmes.
+
+***Code et Visualisation***
+
+```{r, fig.height=6, fig.width=9}
+# importation des bibliothèques
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+# Lecture du dataset
+df <- read_csv("data/Pokemon_data.csv")
+
+# filtrer les outliers du dataframe pour une meilleure lisibilité
+df <- df %>% 
+  filter(weight_kg < 355) %>% 
+  filter(height_m < 3) %>% # 3 ou 2.5 
+  filter (speed < 135) %>% 
+  filter (base_total < 660)
+
+# Affichage du graphique
+ggplot(df) +
+  geom_jitter(aes(x = weight_kg, y = height_m, colour = base_total, size=speed), alpha=1) +
+  scale_size(range = c(0.1, 6), trans = 'reverse') +
+  scale_colour_gradientn(colours = RColorBrewer::brewer.pal(10, "Purples")) +
+  labs(
+    title = "Taille des Pokémon en fonction de leur poids",
+    subtitle = "Ainsi que de leur base stats et de leur vitesse",
+    x = "Poids (kg)",
+    y = "Taille (m)",
+    colour = "Total des `\nbase stats",
+    size = "Vitesse"
+  )
+```
+
+***Analyse :***
+
+Tout d'abord, nous n'observons pas de relation particulière entre la taille et le poids d'un Pokémon. Au niveau de la distribution, il semble y avoir plus de Pokémon légers (< 100kg) et d'une taille moyenne ou petits (< 2m). Il n'y a quasiment pas de Pokémon à la fois petit (< 1m) et lourd (> 150kg).
+
+Nous n'observons pas de lien flagrant entre la vitesse et la taille / poids d'un Pokémon non plus.  Contrairement à ce que l'on pourrait croire, la majorité des Pokémon légers (< 50kg) et petits (< 1m) sont lents. Les Pokémon rapides semblent plus être de taille moyenne ou grande (> 1m).
+
+Quant au total des statistiques de base (base stats), on observe une tendance assez claire : les Pokémon petits (< 1m) ont des base stats plus faibles que les Pokémon de taille moyenne et grands. 
+
+La taille semble donc avoir plus de lien avec les statistiques des Pokémon que le poids.
+
+## 3. Jeu de cartes Pokémon et tournois
+
+### 3.1. Tournois Pokémons dans le monde
 
 
 ***Objectif du graphique :***  
@@ -693,7 +752,7 @@ Cette culture semble être surtout développée dans 3 régions du monde :
 Deux pays se démarquent encore des autres : le **Japon**, pays d'origine de la licence et les **Etats-Unis** 
 
 
-## X-Cartes les plus utilisés en tournoi
+### 3.2. Cartes les plus utilisés en tournoi
 
 ***Objectif du graphique :***  
 Ici, nous allons répondre à la question suivante : **Quelles sont les cartes les plus utilisées en tournoi officiel Pokémon ?**
@@ -789,7 +848,7 @@ Cela explique que **Comfey** et **Archeops** soient les Pokémons les plus utili
 On voit également qu'une proportion conséquente des cartes les plus utilisées sont des Pokémons de type **Normal**. Leur type leur permettant d'être utilisé en combinaison avec n'importe quel autre type, ce qui explique qu'ils soient joués dans beaucoup de decks différents.
 
 
-## X. Visualisation du classement des joueurs dans les tournois de carte Pokémon en fonction du rang de leur deck en terme de prix dans le tournoi 
+### 3.3. Classement des joueurs dans les tournois de carte Pokémon en fonction du rang de leur deck en terme de prix dans le tournoi 
 
 
 ***Objectif du graphique :***  
@@ -1058,8 +1117,9 @@ Cependant, ce graphique ne permet pas d’identifier clairement une relation lin
 En conclusion, on peut avancer que les joueurs souhaitant viser les meilleures places doivent investir significativement plus que leurs adversaires.
 À l’inverse, ceux qui utilisent des decks au prix moyen peuvent espérer atteindre des positions intermédiaires, généralement **en dehors du top 40.**
 
+## 4. Jeux vidéos Pokémon
 
-## X. Visualisation de la popularité des jeux vidéos Pokémon à l'aide du nombre de ventes de 1996 à 2014  
+### 4.1. Visualisation de la popularité des jeux vidéos Pokémon à l'aide du nombre de ventes de 1996 à 2014  
   
   
 ***Objectif du graphique :***  
@@ -1192,7 +1252,7 @@ On peut expliquer cette baisse des ventes par le fait qu'il y'a de plus en plus 
 
 
 
-## X. Visualisation de la répartition régionale des ventes des jeux Pokémon de 1996 à 2014 
+### 4.2 Visualisation de la répartition régionale des ventes des jeux Pokémon de 1996 à 2014 
 
 
 ***Objectif du graphique :***  
@@ -1276,7 +1336,7 @@ Au vu de ces proportions, on peut conclure que l'Amérique du Nord représente l
 
 On observe tout de même certaines exceptions. Pour les jeux **Pokémon Noir & Blanc**, **l'Europe** affiche ses pires score avec **21 et 22 %**, au profit du **Japon**, qui atteint ses meilleurs scores avec **37 et 38 %**.
 
-## X. Comparaison entre prix de vente d'une carte et popularité d'un Pokémon, en fonction de leur génération
+### 4.3. Comparaison entre prix de vente d'une carte et popularité d'un Pokémon, en fonction de leur génération
 
 ***Objectif du graphique :***
 Ici, nous allons répondre à deux questions : 
@@ -1391,58 +1451,5 @@ Tout d'abord, nous observons que la génération d'un Pokémon semble bien influ
 
 Lorsque l'on compare avec la courbe de la popularité moyenne des Pokémons, on observe effectivement une corrélation. Les deux graphes suivent tous les deux une tendance décroissante, avec la popularité qui suit une tendance plus linéaire. Bien que le critère majeur du prix de vente d'une carte à collectionner soit sa rareté, il est possible que la popularité du Pokémon de la carte influe également. Une hypothèse probable est qu'il s'agit de la génération qui créé cette tendance : plus une carte est ancienne (et donc d'une génération ancienne) et plus elle est rare. De la même manière, un biais de nostalgie peut influer sur l'opinion des personnes et sur le choix de leur Pokémon préféré dans un sondage de popularité.
 
-## Visualisation de la taille des Pokémon en fonction de leur poids, ainsi que de leur vitesse et du total de leurs statistiques de base
-
-***Objectif du graphique :***
-
-Ici, nous allons répondre à la question suivante : **Observe-t-on une relation entre le poids, la taille, la vitesse et le totale des statistiques de base d'un Pokémon ?**
-
-
-Pour réaliser ce graphique, nous avons utilisé le jeu de données **The complete pokemon dataset**.
-
-Pour des raisons de lisibilité du graphique, nous avons dû ignorer certaines valeurs extrêmes.
-
-***Code et Visualisation***
-
-```{r, fig.height=6, fig.width=9}
-# importation des bibliothèques
-library(ggplot2)
-library(dplyr)
-library(readr)
-
-# Lecture du dataset
-df <- read_csv("data/Pokemon_data.csv")
-
-# filtrer les outliers du dataframe pour une meilleure lisibilité
-df <- df %>% 
-  filter(weight_kg < 355) %>% 
-  filter(height_m < 3) %>% # 3 ou 2.5 
-  filter (speed < 135) %>% 
-  filter (base_total < 660)
-
-# Affichage du graphique
-ggplot(df) +
-  geom_jitter(aes(x = weight_kg, y = height_m, colour = base_total, size=speed), alpha=1) +
-  scale_size(range = c(0.1, 6), trans = 'reverse') +
-  scale_colour_gradientn(colours = RColorBrewer::brewer.pal(10, "Purples")) +
-  labs(
-    title = "Taille des Pokémon en fonction de leur poids",
-    subtitle = "Ainsi que de leur base stats et de leur vitesse",
-    x = "Poids (kg)",
-    y = "Taille (m)",
-    colour = "Total des `\nbase stats",
-    size = "Vitesse"
-  )
-```
-
-***Analyse :***
-
-Tout d'abord, nous n'observons pas de relation particulière entre la taille et le poids d'un Pokémon. Au niveau de la distribution, il semble y avoir plus de Pokémon légers (< 100kg) et d'une taille moyenne ou petits (< 2m). Il n'y a quasiment pas de Pokémon à la fois petit (< 1m) et lourd (> 150kg).
-
-Nous n'observons pas de lien flagrant entre la vitesse et la taille / poids d'un Pokémon non plus.  Contrairement à ce que l'on pourrait croire, la majorité des Pokémon légers (< 50kg) et petits (< 1m) sont lents. Les Pokémon rapides semblent plus être de taille moyenne ou grande (> 1m).
-
-Quant au total des statistiques de base (base stats), on observe une tendance assez claire : les Pokémon petits (< 1m) ont des base stats plus faibles que les Pokémon de taille moyenne et grands. 
-
-La taille semble donc avoir plus de lien avec les statistiques des Pokémon que le poids.
 
 # III. Conclusion
