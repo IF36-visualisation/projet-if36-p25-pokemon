@@ -78,6 +78,7 @@ Pour réaliser ce graphique, nous avons utilisé les données du dataset "Pokemo
 Nous avons filtré les Pokémon qui n'ont pas de type secondaire (type2 = "None").
 Nous avons ensuite compté le nombre de Pokémon par combinaison de types, puis nous avons ajouté des totaux pour chaque type principal et secondaire.
 
+
 ***Visualisation :***  
 ```{r warning=FALSE}
 library(ggplot2)
@@ -374,7 +375,7 @@ Pour réaliser ce graphique, nous avons utilisé le jeu de données **The comple
 Pour les Pokémons possédant un double type (Normal-Vol par exemple), les deux types sont pris en compte sur ce graphique. **Il ne faut donc pas** interpréter la hauteur totale des barres comme le nombre de Pokémons introduits par génération
 
 
-***Visualisation :*** 
+***Visualisation :***  
 ```{r, fig.width=8, fig.height=8}
 library(tidyverse)
 
@@ -425,7 +426,52 @@ De manière générale, on voit que la répartition des types est assez proche d
 
 ## 2. Etude des statistiques des Pokémons
 
-### 2.1. Comparaison des base stats des Pokémons légendaires et des Pokémons normaux
+
+### 2.1. Distribution des stats de base
+
+***Objectif du graphique :***
+Ici, nous allons répondre à la question suivante : Comment les statistiques de l'ensemble des Pokémons sont-elles distribuées ?
+
+***Présentation :***
+Nous allons ici étudier les 6 statistiques principales : **HP** (Points de vie), **Attaque**, **Défense**, **Attaque Spéciale**, **Défense Spéciale** et **Vitesse**.
+
+
+***Visualisation :***  
+```{r}
+library(patchwork)
+
+df = read_csv("data/Pokemon_data.csv")
+
+df <- df %>%
+  pivot_longer(
+    cols = c(hp, attack, defense, sp_attack, sp_defense, speed),
+    names_to = "stat",
+    values_to = "value"
+  )
+
+p1 <- ggplot(pok_data, aes(x = hp)) + geom_histogram(binwidth = 10, fill = "skyblue") + labs(title = "HP")
+p2 <- ggplot(pok_data, aes(x = attack)) + geom_histogram(binwidth = 10, fill = "tomato") + labs(title = "Attaque")
+p3 <- ggplot(pok_data, aes(x = defense)) + geom_histogram(binwidth = 10, fill = "seagreen") + labs(title = "Défense")
+p4 <- ggplot(pok_data, aes(x = sp_attack)) + geom_histogram(binwidth = 10, fill = "orchid") + labs(title = "Attaque Spéciale")
+p5 <- ggplot(pok_data, aes(x = sp_defense)) + geom_histogram(binwidth = 10, fill = "goldenrod") + labs(title = "Défense Spéciale")
+p6 <- ggplot(pok_data, aes(x = speed)) + geom_histogram(binwidth = 10, fill = "coral") + labs(title = "Vitesse")
+
+# Combine plots into a 3x2 grid
+(p1 | p2 | p3) /
+(p4 | p5 | p6) +
+  plot_annotation(
+      title = "Distribution des statistiques de base des Pokémon",
+      theme = theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
+    )
+```
+
+***Analyse :***
+
+Globalement, la distribution de toutes les statistiques suit bien une Gaussienne, comme on pourrait s'y attendre.  
+On note cependant une légère asymétrie, notamment pour l'**Attaque** et la **Défense**, où quelques valeurs sont bien plus élevées que la moyenne. Quelques Pokémons aux statistiques particulièrement élevées sortent donc du lot. On peut imaginer que ces Pokémons exceptionnels sont notamment les Pokémons **Légendaires**.
+
+
+### 2.2. Comparaison des base stats des Pokémons légendaires et des Pokémons normaux
 
 ***Objectif du graphique :***
 Ici, nous allons répondre à la question suivante : Les Pokémons légdendaires sont-ils les plus forts ?
@@ -437,7 +483,8 @@ Nous allons utiliser le dataset "The Complete Pokemon Dataset".
 Les conditions des Pokémons légendaires, mythiques ("mythical" en anglais) et méga-évolutions sont dispersées dans 3 colonnes différentes que nous allons fusionner en une seule colonne "group".
 Enfin, nous affichons l'histogramme du total de base stats, en différenciant les Pokémons spéciaux par la couleur. 
 
-***Visualisation :*** 
+
+***Visualisation :***  
 ```{r}
 # importations des bibliothèques tidyverse
 library(ggplot2)
@@ -478,7 +525,7 @@ De plus, les Pokémons les plus "puissants", possédant le montant le plus élev
 
 Il existe tout de même quelques cas de Pokémons spéciaux avec des statistiques moyennes voire faibles. On peut penser à Cosmog (200 de base stats), qui est un cas particulier parmi les Pokémons légendaires car il peut évoluer : sa dernière évolution, Solgaleo, possède lui 680 de base stats. 
 
-### 2.2. Statistiques des pokémons selon leur niveau d'évolution
+### 2.3. Statistiques des pokémons selon leur niveau d'évolution
 ***Objectif du graphique :***  
 Ici, nous allons répondre à la question suivante : **Quelles sont les statistiques des pokémons selon leur niveau d'évolution ?**
 En effet, chaque niveau d'évolution peut avoir un impact significatif sur les statistiques d'un pokémon, telles que ses points de vie (HP), son attaque, sa défense, etc.
@@ -487,7 +534,8 @@ En effet, chaque niveau d'évolution peut avoir un impact significatif sur les s
 Pour réaliser ce graphique, nous avons utilisé les données du dataset "Pokemon_data" et "pokemon-tcg-data-master 1999-2023.csv".
 Nous avons filtré les Pokémon selon leur niveau d'évolution (1, 2 ou 3) dans le second dataset, et nous avons calculé la moyenne des statistiques pour chaque niveau d'évolution grâce au premier.
 
-***Visualisation***  
+
+***Visualisation :***  
 ```{r warning=FALSE}
 library(ggplot2)
 library(dplyr)
@@ -558,7 +606,7 @@ En effet, les pokémons de niveau d'évolution 1 ont des statistiques plus faibl
 Cela est logique, car les pokémons de niveau d'évolution 3 sont généralement plus puissants que ceux de niveau d'évolution 2, qui eux-mêmes sont plus puissants que ceux de niveau d'évolution 1.
 Nous pouvons également observer que les statistiques des pokémons de niveau d'évolution 1 sont plus homogènes que celles des pokémons de niveau d'évolution 2 et 3. De plus, les statistiques n'évoluent pas toutes de la même manière. Par exemple : la vitesse évolue "peu" entre les niveaux d'évolution, à où l'attaque et la défense évoluent beaucoup plus.
 
-### 2.3. Taille des Pokémon en fonction de leur poids, ainsi que de leur vitesse et du total de leurs statistiques de base
+### 2.4. Taille des Pokémon en fonction de leur poids, ainsi que de leur vitesse et du total de leurs statistiques de base
 
 ***Objectif du graphique :***
 
@@ -569,8 +617,8 @@ Pour réaliser ce graphique, nous avons utilisé le jeu de données **The comple
 
 Pour des raisons de lisibilité du graphique, nous avons dû ignorer certaines valeurs extrêmes.
 
-***Code et Visualisation***
 
+***Visualisation :***  
 ```{r, fig.height=6, fig.width=9}
 # importation des bibliothèques
 library(ggplot2)
@@ -1352,7 +1400,8 @@ Pour réaliser ce graphique, nous avons combiné plusieurs jeux de données :
 
 Il faut noter que les cartes Pokémon qui ne concernent pas des Pokémon (cartes Dresseur, cartes Objet, etc.) ne sont pas prises en compte dans cette visualisation.
 
-***Code et Visualisation***
+
+***Visualisation :***
 ```{r}
 # importation des bibliothèques
 library(ggplot2)
